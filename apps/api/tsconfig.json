@@ -1,0 +1,18 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "module": "commonjs",
+    "moduleResolution": "node10",
+    "target": "ES2022",
+    "lib": ["ES2022"],
+    "types": ["node", "multer"],
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "strictPropertyInitialization": false,
+    "removeComments": true,
+    "declaration": false,
+    "outDir": "./dist",
+    "baseUrl": "./"
+  },
+  "include": ["src", "test", "drizzle.config.ts", "vitest.config.ts"]
+}
