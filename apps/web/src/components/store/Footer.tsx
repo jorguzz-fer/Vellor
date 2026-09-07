@@ -68,7 +68,7 @@ export function Footer() {
           <span>
             © {year} {store?.name ?? 'Vellor'} · {t('footer.rights')}
           </span>
-          <BrandLogo size="sm" showTagline={false} />
+          <BrandLogo size="sm" />
           <span className="text-center sm:text-right">
             {t('footer.payments')}
             <br />
