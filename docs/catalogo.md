@@ -52,7 +52,48 @@ juros repassados ou não, desconto no Pix), e os três textos legais (privacidad
 termos de compra, trocas e devoluções). Os trechos marcados com **‹decidir›** precisam
 ser substituídos antes do go-live.
 
-## 5. Importação em massa (opcional, próxima etapa)
+## 5. Importação em massa a partir de pastas de fotos
 
-Se o catálogo tiver muitos itens, podemos importar a planilha diretamente (CSV) em vez
-de cadastrar um a um. Envie a planilha no formato acima e faremos a carga.
+Quando as fotos já estiverem organizadas em uma pasta por produto, o script
+`import-catalog` cria os produtos de uma vez. Ele roda dentro do container da API, lê
+qualquer estrutura de diretórios e trata cada pasta com imagens como um produto, com as
+fotos na ordem alfabética do nome do arquivo.
+
+```bash
+# extraia as fotos em um diretório dentro do container da API
+docker exec <api> mkdir -p /tmp/fotos
+docker cp fotos.tar.gz <api>:/tmp/fotos.tar.gz
+docker exec <api> tar xzf /tmp/fotos.tar.gz -C /tmp/fotos
+
+# confira o que seria criado, sem gravar nada
+docker exec <api> node dist/scripts/import-catalog.js /tmp/fotos --dry-run
+
+# importe
+docker exec <api> node dist/scripts/import-catalog.js /tmp/fotos --category relogios
+```
+
+Cada produto nasce com a marca da loja (`--brand`, padrão Vellor), nome derivado da
+pasta, uma variação única com estoque, preço estável sorteado na faixa informada e uma
+ficha técnica coerente com o tipo da categoria. Nada disso é definitivo: o objetivo é ter
+o catálogo navegável rápido, e todos os campos são editáveis no Admin depois.
+
+| Opção                         | Para que serve                                 |
+| ----------------------------- | ---------------------------------------------- |
+| `--category` / `--collection` | destino dos produtos (padrão: `relogios`)      |
+| `--brand`                     | marca gravada nos produtos (padrão: `Vellor`)  |
+| `--status`                    | `active` ou `draft` (padrão: `active`)         |
+| `--min-price` / `--max-price` | faixa de preço em reais (padrão: 8000 a 60000) |
+| `--stock`                     | estoque inicial de cada variação (padrão: 3)   |
+| `--tag`                       | rótulo da carga, usado para desfazer           |
+| `--dry-run`                   | só mostra o que faria                          |
+
+Rodar de novo não duplica nada: produtos cujo slug já existe são pulados. A carga é
+reversível pelo rótulo, o que também apaga as imagens do storage:
+
+```bash
+docker exec <api> node dist/scripts/import-catalog.js --remove --tag import
+```
+
+Use apenas fotos próprias ou licenciadas. Imagens de catálogos de terceiros pertencem a
+quem as produziu, e nomes de marcas registradas não devem ser aplicados a peças que não
+sejam originais daquela marca.
