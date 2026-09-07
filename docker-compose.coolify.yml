@@ -7,7 +7,10 @@
 #     portas no host e o Caddy interno atende só HTTP na porta 80 (DOMAIN=:80);
 #   - não há env_file: as variáveis vêm da aba "Environment Variables" do Coolify;
 #   - o script de backup está embutido (sem bind mount de arquivo do repositório);
-#   - caminhos relativos à raiz do repositório.
+#   - caminhos relativos à raiz do repositório;
+#   - as variáveis obrigatórias ficam sem valor padrão e sem texto de ajuda (${VAR:?...}),
+#     porque o Coolify copia esse texto como valor da variável. A própria API valida e
+#     explica o que falta nos logs.
 
 services:
   postgres:
@@ -15,7 +18,7 @@ services:
     restart: unless-stopped
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-vellor}
-      POSTGRES_PASSWORD: '${POSTGRES_PASSWORD:?defina POSTGRES_PASSWORD nas variáveis do Coolify}'
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB:-vellor}
     volumes:
       - pgdata:/var/lib/postgresql/data
@@ -40,9 +43,10 @@ services:
       STORAGE_LOCAL_DIR: /data/uploads
       SWAGGER_ENABLED: 'false'
       LOG_LEVEL: ${LOG_LEVEL:-info}
-      # --- Obrigatórias ---
-      APP_URL: '${APP_URL:?defina APP_URL, ex. https://loja.exemplo.com.br}'
-      APP_ENCRYPTION_KEY: '${APP_ENCRYPTION_KEY:?defina APP_ENCRYPTION_KEY (openssl rand -base64 48)}'
+      # --- Obrigatórias: preencha na interface do Coolify ---
+      # APP_URL = https://seu-dominio (sem barra no final); APP_ENCRYPTION_KEY = openssl rand -base64 48
+      APP_URL: ${APP_URL}
+      APP_ENCRYPTION_KEY: ${APP_ENCRYPTION_KEY}
       # --- Primeiro administrador (criado na inicialização se ainda não existir) ---
       ADMIN_EMAIL: ${ADMIN_EMAIL:-}
       ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
