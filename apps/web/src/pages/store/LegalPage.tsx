@@ -30,14 +30,19 @@ export default function LegalPage({ kind }: { kind: LegalKind }) {
       <div className="grid gap-10 lg:grid-cols-12">
         <aside className="lg:col-span-3">
           <span className="eyebrow">{t('footer.company')}</span>
-          <nav aria-label="Documentos legais" className="mt-3 flex gap-2 overflow-x-auto scrollbar-none lg:flex-col lg:overflow-visible">
+          <nav
+            aria-label="Documentos legais"
+            className="mt-3 flex gap-2 overflow-x-auto scrollbar-none lg:flex-col lg:overflow-visible"
+          >
             {PAGES.map((page) => (
               <NavLink
                 key={page.kind}
                 to={page.path}
                 className={({ isActive }) =>
                   `shrink-0 rounded-sm border px-4 py-2.5 text-[11px] font-semibold uppercase tracking-[0.15em] transition-colors ${
-                    isActive ? 'border-gold bg-gold/10 text-gold' : 'border-line text-ivory/80 hover:border-line-strong hover:text-gold'
+                    isActive
+                      ? 'border-gold bg-gold/10 text-gold'
+                      : 'border-line text-ivory/80 hover:border-line-strong hover:text-gold'
                   }`
                 }
               >
@@ -60,16 +65,23 @@ export default function LegalPage({ kind }: { kind: LegalKind }) {
             <>
               {provisional && (
                 <Alert tone="warning" className="mt-6">
-                  Conteúdo provisório: este texto ainda está sendo finalizado pela {storeName} e pode ser alterado. Em caso de dúvida, fale com o atendimento antes de
-                  concluir a compra.
+                  Conteúdo provisório: este texto ainda está sendo finalizado pela {storeName} e
+                  pode ser alterado. Em caso de dúvida, fale com o atendimento antes de concluir a
+                  compra.
                 </Alert>
               )}
               {body ? (
                 <div className="card mt-6 px-6 py-8 md:px-10 md:py-10">
-                  <p className="whitespace-pre-line text-sm leading-relaxed text-ivory/85">{body}</p>
+                  <p className="whitespace-pre-line text-sm leading-relaxed text-ivory/85">
+                    {body}
+                  </p>
                 </div>
               ) : (
-                <EmptyState icon={<FileText className="h-10 w-10" />} title="Documento em elaboração" text={`A ${storeName} ainda não publicou este documento. Fale com o atendimento se precisar de informações.`} />
+                <EmptyState
+                  icon={<FileText className="h-10 w-10" />}
+                  title="Documento em elaboração"
+                  text={`A ${storeName} ainda não publicou este documento. Fale com o atendimento se precisar de informações.`}
+                />
               )}
             </>
           )}

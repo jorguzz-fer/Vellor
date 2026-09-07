@@ -43,16 +43,25 @@ export function AdminLayout() {
   const [open, setOpen] = useState(false);
 
   if (auth.isLoading) return <PageLoader />;
-  if (!auth.authenticated) return <Navigate to="/admin/entrar" replace state={{ from: location.pathname }} />;
+  if (!auth.authenticated)
+    return <Navigate to="/admin/entrar" replace state={{ from: location.pathname }} />;
   if (!auth.isAdmin) return <Navigate to="/" replace />;
-  if (auth.mfaSetupRequired || auth.mfaPending) return <Navigate to="/admin/mfa" replace state={{ from: location.pathname }} />;
+  if (auth.mfaSetupRequired || auth.mfaPending)
+    return <Navigate to="/admin/mfa" replace state={{ from: location.pathname }} />;
 
   return (
     <div className="flex min-h-screen bg-deep text-cream">
-      <aside className={`fixed inset-y-0 left-0 z-40 flex w-64 flex-col border-r border-line bg-noir transition-transform lg:static lg:translate-x-0 ${open ? 'translate-x-0' : '-translate-x-full'}`}>
+      <aside
+        className={`fixed inset-y-0 left-0 z-40 flex w-64 flex-col border-r border-line bg-noir transition-transform lg:static lg:translate-x-0 ${open ? 'translate-x-0' : '-translate-x-full'}`}
+      >
         <div className="flex items-center justify-between border-b border-line px-5 py-4">
           <BrandLogo size="sm" showTagline={false} />
-          <button type="button" className="p-1 text-ivory/60 lg:hidden" onClick={() => setOpen(false)} aria-label="Fechar menu">
+          <button
+            type="button"
+            className="p-1 text-ivory/60 lg:hidden"
+            onClick={() => setOpen(false)}
+            aria-label="Fechar menu"
+          >
             <X className="h-5 w-5" />
           </button>
         </div>
@@ -64,7 +73,9 @@ export function AdminLayout() {
               to={item.to}
               end={item.end}
               onClick={() => setOpen(false)}
-              className={({ isActive }) => `mb-0.5 flex items-center gap-3 rounded-sm px-3 py-2.5 text-xs font-medium uppercase tracking-[0.12em] transition-colors ${isActive ? 'bg-spruce text-gold' : 'text-ivory/70 hover:bg-spruce/60 hover:text-ivory'}`}
+              className={({ isActive }) =>
+                `mb-0.5 flex items-center gap-3 rounded-sm px-3 py-2.5 text-xs font-medium uppercase tracking-[0.12em] transition-colors ${isActive ? 'bg-spruce text-gold' : 'text-ivory/70 hover:bg-spruce/60 hover:text-ivory'}`
+              }
             >
               <item.icon className="h-4 w-4" />
               {item.label}
@@ -72,18 +83,38 @@ export function AdminLayout() {
           ))}
         </nav>
         <div className="border-t border-line p-3">
-          <a href="/" target="_blank" rel="noreferrer" className="flex items-center gap-3 rounded-sm px-3 py-2 text-xs uppercase tracking-[0.12em] text-ivory/70 hover:text-gold">
+          <a
+            href="/"
+            target="_blank"
+            rel="noreferrer"
+            className="flex items-center gap-3 rounded-sm px-3 py-2 text-xs uppercase tracking-[0.12em] text-ivory/70 hover:text-gold"
+          >
             <ExternalLink className="h-4 w-4" /> {t('admin.viewStore')}
           </a>
-          <button type="button" onClick={() => logout.mutate()} className="flex w-full items-center gap-3 rounded-sm px-3 py-2 text-left text-xs uppercase tracking-[0.12em] text-ivory/70 hover:text-danger">
+          <button
+            type="button"
+            onClick={() => logout.mutate()}
+            className="flex w-full items-center gap-3 rounded-sm px-3 py-2 text-left text-xs uppercase tracking-[0.12em] text-ivory/70 hover:text-danger"
+          >
             <LogOut className="h-4 w-4" /> {t('admin.logout')}
           </button>
         </div>
       </aside>
-      {open && <div className="fixed inset-0 z-30 bg-noir/70 lg:hidden" onClick={() => setOpen(false)} role="presentation" />}
+      {open && (
+        <div
+          className="fixed inset-0 z-30 bg-noir/70 lg:hidden"
+          onClick={() => setOpen(false)}
+          role="presentation"
+        />
+      )}
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="flex items-center justify-between border-b border-line bg-dark px-4 py-3 lg:px-8">
-          <button type="button" className="p-1 text-ivory/70 lg:hidden" onClick={() => setOpen(true)} aria-label="Abrir menu">
+          <button
+            type="button"
+            className="p-1 text-ivory/70 lg:hidden"
+            onClick={() => setOpen(true)}
+            aria-label="Abrir menu"
+          >
             <Menu className="h-5 w-5" />
           </button>
           <span className="text-xs text-muted">

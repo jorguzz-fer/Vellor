@@ -21,7 +21,17 @@ export function PageLoader({ label = 'Carregando…' }: { label?: string }) {
   );
 }
 
-export function EmptyState({ title, text, action, icon }: { title: string; text?: string; action?: ReactNode; icon?: ReactNode }) {
+export function EmptyState({
+  title,
+  text,
+  action,
+  icon,
+}: {
+  title: string;
+  text?: string;
+  action?: ReactNode;
+  icon?: ReactNode;
+}) {
   return (
     <div className="flex flex-col items-center justify-center py-16 text-center">
       {icon && <div className="mb-4 text-gold/70">{icon}</div>}
@@ -57,18 +67,40 @@ const TONE_CLASS: Record<Tone, string> = {
   muted: 'border-line-strong bg-spruce text-ivory/70',
 };
 
-export function Badge({ tone = 'muted', children, className = '' }: { tone?: Tone; children: ReactNode; className?: string }) {
+export function Badge({
+  tone = 'muted',
+  children,
+  className = '',
+}: {
+  tone?: Tone;
+  children: ReactNode;
+  className?: string;
+}) {
   return (
-    <span className={`inline-flex items-center gap-1 rounded-sm border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.15em] ${TONE_CLASS[tone]} ${className}`}>
+    <span
+      className={`inline-flex items-center gap-1 rounded-sm border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.15em] ${TONE_CLASS[tone]} ${className}`}
+    >
       {children}
     </span>
   );
 }
 
-export function Alert({ tone = 'info', children, className = '' }: { tone?: Tone; children: ReactNode; className?: string }) {
-  const Icon = tone === 'danger' || tone === 'warning' ? AlertTriangle : tone === 'success' ? Check : Info;
+export function Alert({
+  tone = 'info',
+  children,
+  className = '',
+}: {
+  tone?: Tone;
+  children: ReactNode;
+  className?: string;
+}) {
+  const Icon =
+    tone === 'danger' || tone === 'warning' ? AlertTriangle : tone === 'success' ? Check : Info;
   return (
-    <div className={`flex items-start gap-2.5 rounded-sm border p-3 text-sm ${TONE_CLASS[tone]} ${className}`} role={tone === 'danger' ? 'alert' : 'status'}>
+    <div
+      className={`flex items-start gap-2.5 rounded-sm border p-3 text-sm ${TONE_CLASS[tone]} ${className}`}
+      role={tone === 'danger' ? 'alert' : 'status'}
+    >
       <Icon className="mt-0.5 h-4 w-4 shrink-0" />
       <div className="text-ivory/90">{children}</div>
     </div>
@@ -100,12 +132,27 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   return (
     <ToastContext.Provider value={value}>
       {children}
-      <div className="pointer-events-none fixed right-4 top-24 z-[100] flex w-[min(92vw,360px)] flex-col gap-2" aria-live="polite">
+      <div
+        className="pointer-events-none fixed right-4 top-24 z-[100] flex w-[min(92vw,360px)] flex-col gap-2"
+        aria-live="polite"
+      >
         {toasts.map((t) => (
-          <div key={t.id} className={`pointer-events-auto flex items-center gap-2.5 rounded-sm border bg-noir/95 px-4 py-3 text-xs tracking-wide shadow-2xl backdrop-blur animate-slide-in-right ${TONE_CLASS[t.tone]}`}>
-            {t.tone === 'danger' ? <AlertTriangle className="h-4 w-4 shrink-0" /> : <Check className="h-4 w-4 shrink-0" />}
+          <div
+            key={t.id}
+            className={`pointer-events-auto flex items-center gap-2.5 rounded-sm border bg-noir/95 px-4 py-3 text-xs tracking-wide shadow-2xl backdrop-blur animate-slide-in-right ${TONE_CLASS[t.tone]}`}
+          >
+            {t.tone === 'danger' ? (
+              <AlertTriangle className="h-4 w-4 shrink-0" />
+            ) : (
+              <Check className="h-4 w-4 shrink-0" />
+            )}
             <span className="flex-1 text-ivory">{t.message}</span>
-            <button type="button" aria-label="Fechar" className="text-ivory/50 hover:text-ivory" onClick={() => setToasts((prev) => prev.filter((x) => x.id !== t.id))}>
+            <button
+              type="button"
+              aria-label="Fechar"
+              className="text-ivory/50 hover:text-ivory"
+              onClick={() => setToasts((prev) => prev.filter((x) => x.id !== t.id))}
+            >
               <X className="h-3.5 w-3.5" />
             </button>
           </div>

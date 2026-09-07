@@ -112,7 +112,11 @@ export default function OrdersPage() {
         )}
       </div>
 
-      <form onSubmit={submitSearch} className="card grid gap-3 p-4 md:grid-cols-3 xl:grid-cols-6" aria-label="Filtros de pedidos">
+      <form
+        onSubmit={submitSearch}
+        className="card grid gap-3 p-4 md:grid-cols-3 xl:grid-cols-6"
+        aria-label="Filtros de pedidos"
+      >
         <Input
           label={t('common.search')}
           name="q"
@@ -147,15 +151,40 @@ export default function OrdersPage() {
           options={PAYMENT_STATUSES.map((s) => ({ value: s, label: PAYMENT_STATUS_LABELS[s] }))}
         />
         <div className="grid grid-cols-2 gap-3">
-          <Input label="De" name="from" type="date" value={params.from ?? ''} max={params.to} onChange={(e) => update({ from: e.target.value || undefined })} />
-          <Input label="Até" name="to" type="date" value={params.to ?? ''} min={params.from} onChange={(e) => update({ to: e.target.value || undefined })} />
+          <Input
+            label="De"
+            name="from"
+            type="date"
+            value={params.from ?? ''}
+            max={params.to}
+            onChange={(e) => update({ from: e.target.value || undefined })}
+          />
+          <Input
+            label="Até"
+            name="to"
+            type="date"
+            value={params.to ?? ''}
+            min={params.from}
+            onChange={(e) => update({ to: e.target.value || undefined })}
+          />
         </div>
         <div className="flex flex-wrap items-center gap-2 md:col-span-3 xl:col-span-6">
-          <Button type="submit" variant="secondary" size="sm" icon={<Search className="h-3.5 w-3.5" />}>
+          <Button
+            type="submit"
+            variant="secondary"
+            size="sm"
+            icon={<Search className="h-3.5 w-3.5" />}
+          >
             {t('common.filter')}
           </Button>
           {hasFilters && (
-            <Button type="button" variant="ghost" size="sm" icon={<X className="h-3.5 w-3.5" />} onClick={() => setSearchParams(new URLSearchParams())}>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              icon={<X className="h-3.5 w-3.5" />}
+              onClick={() => setSearchParams(new URLSearchParams())}
+            >
               {t('common.clearFilters')}
             </Button>
           )}
@@ -165,12 +194,19 @@ export default function OrdersPage() {
       {query.isPending ? (
         <PageLoader />
       ) : query.isError ? (
-        <ErrorState message={query.error instanceof ApiError ? query.error.message : undefined} onRetry={() => query.refetch()} />
+        <ErrorState
+          message={query.error instanceof ApiError ? query.error.message : undefined}
+          onRetry={() => query.refetch()}
+        />
       ) : !data || data.items.length === 0 ? (
         <div className="card">
           <EmptyState
             title="Nenhum pedido encontrado"
-            text={hasFilters ? 'Ajuste os filtros ou limpe a busca para ver todos os pedidos.' : 'Os pedidos da loja aparecerão aqui.'}
+            text={
+              hasFilters
+                ? 'Ajuste os filtros ou limpe a busca para ver todos os pedidos.'
+                : 'Os pedidos da loja aparecerão aqui.'
+            }
             action={
               hasFilters ? (
                 <Button variant="secondary" onClick={() => setSearchParams(new URLSearchParams())}>
@@ -206,33 +242,52 @@ export default function OrdersPage() {
                     }}
                   >
                     <td>
-                      <Link to={`/admin/pedidos/${order.id}`} className="font-medium text-gold hover:underline">
+                      <Link
+                        to={`/admin/pedidos/${order.id}`}
+                        className="font-medium text-gold hover:underline"
+                      >
                         {order.number}
                       </Link>
                     </td>
-                    <td className="whitespace-nowrap text-xs text-muted">{formatDateTime(order.createdAt)}</td>
+                    <td className="whitespace-nowrap text-xs text-muted">
+                      {formatDateTime(order.createdAt)}
+                    </td>
                     <td>
                       <span className="block max-w-[220px] truncate">{order.customerName}</span>
-                      <span className="block max-w-[220px] truncate text-xs text-muted">{order.customerEmail}</span>
+                      <span className="block max-w-[220px] truncate text-xs text-muted">
+                        {order.customerEmail}
+                      </span>
                     </td>
                     <td className="text-right">{order.itemCount}</td>
                     <td>
-                      <span className="block whitespace-nowrap text-xs">{PAYMENT_METHOD_LABELS[order.paymentMethod]}</span>
+                      <span className="block whitespace-nowrap text-xs">
+                        {PAYMENT_METHOD_LABELS[order.paymentMethod]}
+                      </span>
                       <Badge tone={PAYMENT_TONE[order.paymentStatus]} className="mt-1">
                         {PAYMENT_STATUS_LABELS[order.paymentStatus]}
                       </Badge>
                     </td>
                     <td>
-                      <Badge tone={STATUS_TONE[order.status]}>{ORDER_STATUS_LABELS[order.status]}</Badge>
+                      <Badge tone={STATUS_TONE[order.status]}>
+                        {ORDER_STATUS_LABELS[order.status]}
+                      </Badge>
                     </td>
-                    <td className="whitespace-nowrap text-right font-medium">{formatBRL(order.totalCents)}</td>
+                    <td className="whitespace-nowrap text-right font-medium">
+                      {formatBRL(order.totalCents)}
+                    </td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
           <div className="px-4">
-            <Pagination page={data.page} totalPages={data.totalPages} total={data.total} label="pedidos" onChange={(page) => update({ page: String(page) })} />
+            <Pagination
+              page={data.page}
+              totalPages={data.totalPages}
+              total={data.total}
+              label="pedidos"
+              onChange={(page) => update({ page: String(page) })}
+            />
           </div>
         </div>
       )}

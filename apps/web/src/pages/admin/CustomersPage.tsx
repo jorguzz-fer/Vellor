@@ -64,14 +64,31 @@ export default function CustomersPage() {
         )}
       </div>
 
-      <form onSubmit={submitSearch} className="card flex flex-col gap-3 p-4 sm:flex-row sm:items-end" aria-label="Busca de clientes">
-        <Input label={t('common.search')} name="q" type="search" placeholder="Nome ou e-mail" value={q} onChange={(e) => setQ(e.target.value)} wrapperClassName="flex-1" />
+      <form
+        onSubmit={submitSearch}
+        className="card flex flex-col gap-3 p-4 sm:flex-row sm:items-end"
+        aria-label="Busca de clientes"
+      >
+        <Input
+          label={t('common.search')}
+          name="q"
+          type="search"
+          placeholder="Nome ou e-mail"
+          value={q}
+          onChange={(e) => setQ(e.target.value)}
+          wrapperClassName="flex-1"
+        />
         <div className="flex gap-2">
           <Button type="submit" variant="secondary" icon={<Search className="h-3.5 w-3.5" />}>
             {t('common.search')}
           </Button>
           {params.q && (
-            <Button type="button" variant="ghost" icon={<X className="h-3.5 w-3.5" />} onClick={() => setSearchParams(new URLSearchParams())}>
+            <Button
+              type="button"
+              variant="ghost"
+              icon={<X className="h-3.5 w-3.5" />}
+              onClick={() => setSearchParams(new URLSearchParams())}
+            >
               Limpar
             </Button>
           )}
@@ -81,10 +98,20 @@ export default function CustomersPage() {
       {query.isPending ? (
         <PageLoader />
       ) : query.isError ? (
-        <ErrorState message={query.error instanceof ApiError ? query.error.message : undefined} onRetry={() => query.refetch()} />
+        <ErrorState
+          message={query.error instanceof ApiError ? query.error.message : undefined}
+          onRetry={() => query.refetch()}
+        />
       ) : !data || data.items.length === 0 ? (
         <div className="card">
-          <EmptyState title="Nenhum cliente encontrado" text={params.q ? `Nenhum cliente corresponde a "${params.q}".` : 'Os clientes cadastrados na loja aparecerão aqui.'} />
+          <EmptyState
+            title="Nenhum cliente encontrado"
+            text={
+              params.q
+                ? `Nenhum cliente corresponde a "${params.q}".`
+                : 'Os clientes cadastrados na loja aparecerão aqui.'
+            }
+          />
         </div>
       ) : (
         <div className={`card transition-opacity ${query.isFetching ? 'opacity-70' : ''}`}>
@@ -112,7 +139,10 @@ export default function CustomersPage() {
                     }}
                   >
                     <td>
-                      <Link to={`/admin/clientes/${customer.id}`} className="font-medium text-gold hover:underline">
+                      <Link
+                        to={`/admin/clientes/${customer.id}`}
+                        className="font-medium text-gold hover:underline"
+                      >
                         {customer.name}
                       </Link>
                       {customer.newsletterOptIn && (
@@ -122,18 +152,32 @@ export default function CustomersPage() {
                       )}
                     </td>
                     <td className="max-w-[240px] truncate text-ivory/80">{customer.email}</td>
-                    <td className="whitespace-nowrap text-ivory/80">{customer.phone ? formatPhoneBR(customer.phone) : '—'}</td>
+                    <td className="whitespace-nowrap text-ivory/80">
+                      {customer.phone ? formatPhoneBR(customer.phone) : '—'}
+                    </td>
                     <td className="text-right">{customer.ordersCount}</td>
-                    <td className="whitespace-nowrap text-right font-medium">{formatBRL(customer.totalSpentCents)}</td>
-                    <td className="whitespace-nowrap text-xs text-muted">{formatShortDate(customer.createdAt)}</td>
-                    <td className="whitespace-nowrap text-xs text-muted">{customer.lastOrderAt ? formatShortDate(customer.lastOrderAt) : '—'}</td>
+                    <td className="whitespace-nowrap text-right font-medium">
+                      {formatBRL(customer.totalSpentCents)}
+                    </td>
+                    <td className="whitespace-nowrap text-xs text-muted">
+                      {formatShortDate(customer.createdAt)}
+                    </td>
+                    <td className="whitespace-nowrap text-xs text-muted">
+                      {customer.lastOrderAt ? formatShortDate(customer.lastOrderAt) : '—'}
+                    </td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
           <div className="px-4">
-            <Pagination page={data.page} totalPages={data.totalPages} total={data.total} label="clientes" onChange={(page) => update({ page: String(page) })} />
+            <Pagination
+              page={data.page}
+              totalPages={data.totalPages}
+              total={data.total}
+              label="clientes"
+              onChange={(page) => update({ page: String(page) })}
+            />
           </div>
         </div>
       )}

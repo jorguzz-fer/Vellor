@@ -41,14 +41,25 @@ function internationalPhone(phone: string): string {
 
 export default function ContactDetailPage() {
   const { id = '' } = useParams();
-  const query = useQuery({ queryKey: ['admin', 'contact', id], queryFn: () => adminApi.contact(id), enabled: Boolean(id) });
-  usePageMeta(query.data ? `${query.data.name} · ${t('admin.contacts')}` : `${t('admin.contacts')} · ${t('admin.title')}`);
+  const query = useQuery({
+    queryKey: ['admin', 'contact', id],
+    queryFn: () => adminApi.contact(id),
+    enabled: Boolean(id),
+  });
+  usePageMeta(
+    query.data
+      ? `${query.data.name} · ${t('admin.contacts')}`
+      : `${t('admin.contacts')} · ${t('admin.title')}`,
+  );
 
   if (query.isPending) return <PageLoader />;
   if (query.isError) {
     return (
       <div className="mx-auto max-w-3xl space-y-4">
-        <ErrorState message={query.error instanceof ApiError ? query.error.message : undefined} onRetry={() => query.refetch()} />
+        <ErrorState
+          message={query.error instanceof ApiError ? query.error.message : undefined}
+          onRetry={() => query.refetch()}
+        />
         <div className="text-center">
           <LinkButton to="/admin/atendimento" variant="secondary">
             {t('common.back')}
@@ -66,24 +77,39 @@ export default function ContactDetailPage() {
     <div className="mx-auto max-w-7xl space-y-6">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <Link to="/admin/atendimento" className="inline-flex items-center gap-1.5 text-[11px] uppercase tracking-[0.2em] text-muted transition-colors hover:text-gold">
+          <Link
+            to="/admin/atendimento"
+            className="inline-flex items-center gap-1.5 text-[11px] uppercase tracking-[0.2em] text-muted transition-colors hover:text-gold"
+          >
             <ArrowLeft className="h-3.5 w-3.5" /> {t('admin.contacts')}
           </Link>
           <div className="mt-2 flex flex-wrap items-center gap-3">
             <h1 className="heading text-2xl">{contact.name}</h1>
-            <Badge tone={STATUS_TONE[contact.status]}>{CONTACT_STATUS_LABELS[contact.status]}</Badge>
+            <Badge tone={STATUS_TONE[contact.status]}>
+              {CONTACT_STATUS_LABELS[contact.status]}
+            </Badge>
           </div>
           <p className="mt-1 text-xs text-muted">
             Recebida em {formatDateTime(contact.createdAt)}
-            {contact.updatedAt !== contact.createdAt ? ` · Atualizada em ${formatDateTime(contact.updatedAt)}` : ''}
+            {contact.updatedAt !== contact.createdAt
+              ? ` · Atualizada em ${formatDateTime(contact.updatedAt)}`
+              : ''}
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <a href={`mailto:${contact.email}?subject=${encodeURIComponent(`Vellor – ${subjectLabel(contact.subject)}`)}`} className="btn-secondary">
+          <a
+            href={`mailto:${contact.email}?subject=${encodeURIComponent(`Vellor – ${subjectLabel(contact.subject)}`)}`}
+            className="btn-secondary"
+          >
             <Mail className="h-3.5 w-3.5" /> Responder por e-mail
           </a>
           {contact.phone && (
-            <a href={whatsappLink(internationalPhone(contact.phone), whatsappMessage)} target="_blank" rel="noreferrer" className="btn-primary">
+            <a
+              href={whatsappLink(internationalPhone(contact.phone), whatsappMessage)}
+              target="_blank"
+              rel="noreferrer"
+              className="btn-primary"
+            >
               <MessageCircle className="h-3.5 w-3.5" /> WhatsApp
             </a>
           )}
@@ -96,10 +122,13 @@ export default function ContactDetailPage() {
             <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
               <h2 className="heading text-lg">{t('contact.message')}</h2>
               <span className="text-xs text-muted">
-                {t('contact.subject')}: <span className="text-ivory/90">{subjectLabel(contact.subject)}</span>
+                {t('contact.subject')}:{' '}
+                <span className="text-ivory/90">{subjectLabel(contact.subject)}</span>
               </span>
             </div>
-            <p className="whitespace-pre-line text-sm leading-relaxed text-ivory/90">{contact.message}</p>
+            <p className="whitespace-pre-line text-sm leading-relaxed text-ivory/90">
+              {contact.message}
+            </p>
           </section>
 
           {(contact.productName || contact.productId) && (
@@ -108,9 +137,14 @@ export default function ContactDetailPage() {
                 <Package className="h-4 w-4" />
               </span>
               <div className="min-w-0 flex-1">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted">{t('contact.product')}</p>
+                <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted">
+                  {t('contact.product')}
+                </p>
                 {contact.productId ? (
-                  <Link to={`/admin/produtos/${contact.productId}`} className="link block truncate text-sm">
+                  <Link
+                    to={`/admin/produtos/${contact.productId}`}
+                    className="link block truncate text-sm"
+                  >
                     {contact.productName ?? 'Ver produto'}
                   </Link>
                 ) : (
@@ -126,26 +160,43 @@ export default function ContactDetailPage() {
             <h2 className="heading mb-4 text-lg">Contato</h2>
             <dl className="space-y-3 text-sm">
               <div>
-                <dt className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted">Nome</dt>
+                <dt className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted">
+                  Nome
+                </dt>
                 <dd className="text-ivory/90">{contact.name}</dd>
               </div>
               <div>
-                <dt className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted">{t('contact.emailLabel')}</dt>
+                <dt className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted">
+                  {t('contact.emailLabel')}
+                </dt>
                 <dd>
-                  <a href={`mailto:${contact.email}`} className="link inline-flex items-center gap-1.5 break-all">
+                  <a
+                    href={`mailto:${contact.email}`}
+                    className="link inline-flex items-center gap-1.5 break-all"
+                  >
                     <Mail className="h-3.5 w-3.5 shrink-0" /> {contact.email}
                   </a>
                 </dd>
               </div>
               <div>
-                <dt className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted">{t('account.phone')}</dt>
+                <dt className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted">
+                  {t('account.phone')}
+                </dt>
                 <dd>
                   {contact.phone ? (
                     <span className="flex flex-wrap items-center gap-3">
-                      <a href={`tel:+${internationalPhone(contact.phone)}`} className="link inline-flex items-center gap-1.5">
+                      <a
+                        href={`tel:+${internationalPhone(contact.phone)}`}
+                        className="link inline-flex items-center gap-1.5"
+                      >
                         <Phone className="h-3.5 w-3.5" /> {formatPhoneBR(contact.phone)}
                       </a>
-                      <a href={whatsappLink(internationalPhone(contact.phone), whatsappMessage)} target="_blank" rel="noreferrer" className="link inline-flex items-center gap-1.5 text-xs">
+                      <a
+                        href={whatsappLink(internationalPhone(contact.phone), whatsappMessage)}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="link inline-flex items-center gap-1.5 text-xs"
+                      >
                         <MessageCircle className="h-3.5 w-3.5" /> WhatsApp
                       </a>
                     </span>
@@ -178,7 +229,11 @@ function ContactForm({ contact }: { contact: ContactRequest }) {
       void queryClient.invalidateQueries({ queryKey: ['admin', 'dashboard'] });
       toast('Atendimento atualizado.', 'success');
     },
-    onError: (error) => toast(error instanceof ApiError ? error.message : 'Não foi possível salvar. Tente novamente.', 'danger'),
+    onError: (error) =>
+      toast(
+        error instanceof ApiError ? error.message : 'Não foi possível salvar. Tente novamente.',
+        'danger',
+      ),
   });
 
   const dirty = status !== contact.status || notes.trim() !== (contact.internalNotes ?? '').trim();

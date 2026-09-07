@@ -21,7 +21,17 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const SIZE_CLASS = { sm: 'px-3 py-2 text-[10px]', md: '', lg: 'px-7 py-4 text-xs' };
 
-export function Button({ variant = 'primary', loading, size = 'md', icon, full, className = '', children, disabled, ...rest }: ButtonProps) {
+export function Button({
+  variant = 'primary',
+  loading,
+  size = 'md',
+  icon,
+  full,
+  className = '',
+  children,
+  disabled,
+  ...rest
+}: ButtonProps) {
   return (
     <button
       className={`${VARIANT_CLASS[variant]} ${SIZE_CLASS[size]} ${full ? 'w-full' : ''} ${className}`}
@@ -45,7 +55,16 @@ interface LinkButtonProps {
   external?: boolean;
 }
 
-export function LinkButton({ to, variant = 'primary', size = 'md', icon, full, className = '', children, external }: LinkButtonProps) {
+export function LinkButton({
+  to,
+  variant = 'primary',
+  size = 'md',
+  icon,
+  full,
+  className = '',
+  children,
+  external,
+}: LinkButtonProps) {
   const cls = `${VARIANT_CLASS[variant]} ${SIZE_CLASS[size]} ${full ? 'w-full' : ''} ${className}`;
   if (external) {
     return (

@@ -21,7 +21,9 @@ export function WhatsAppButton() {
       aria-label="Falar no WhatsApp"
     >
       <MessageCircle className="h-4 w-4" />
-      <span className="hidden text-[11px] font-semibold uppercase tracking-[0.2em] sm:inline">Atendimento</span>
+      <span className="hidden text-[11px] font-semibold uppercase tracking-[0.2em] sm:inline">
+        Atendimento
+      </span>
     </a>
   );
 }

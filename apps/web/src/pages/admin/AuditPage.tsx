@@ -63,7 +63,11 @@ export default function AuditPage() {
         )}
       </div>
 
-      <form onSubmit={submitFilter} className="card flex flex-col gap-3 p-4 sm:flex-row sm:items-end" aria-label="Filtro de auditoria">
+      <form
+        onSubmit={submitFilter}
+        className="card flex flex-col gap-3 p-4 sm:flex-row sm:items-end"
+        aria-label="Filtro de auditoria"
+      >
         <Input
           label="Entidade"
           name="entity"
@@ -79,7 +83,12 @@ export default function AuditPage() {
             {t('common.filter')}
           </Button>
           {params.entity && (
-            <Button type="button" variant="ghost" icon={<X className="h-3.5 w-3.5" />} onClick={() => setSearchParams(new URLSearchParams())}>
+            <Button
+              type="button"
+              variant="ghost"
+              icon={<X className="h-3.5 w-3.5" />}
+              onClick={() => setSearchParams(new URLSearchParams())}
+            >
               Limpar
             </Button>
           )}
@@ -89,10 +98,20 @@ export default function AuditPage() {
       {query.isPending ? (
         <PageLoader />
       ) : query.isError ? (
-        <ErrorState message={query.error instanceof ApiError ? query.error.message : undefined} onRetry={() => query.refetch()} />
+        <ErrorState
+          message={query.error instanceof ApiError ? query.error.message : undefined}
+          onRetry={() => query.refetch()}
+        />
       ) : !data || data.items.length === 0 ? (
         <div className="card">
-          <EmptyState title="Nenhum registro" text={params.entity ? `Nenhuma ação registrada para a entidade "${params.entity}".` : 'As ações administrativas ficam registradas aqui.'} />
+          <EmptyState
+            title="Nenhum registro"
+            text={
+              params.entity
+                ? `Nenhuma ação registrada para a entidade "${params.entity}".`
+                : 'As ações administrativas ficam registradas aqui.'
+            }
+          />
         </div>
       ) : (
         <div className={`card transition-opacity ${query.isFetching ? 'opacity-70' : ''}`}>
@@ -112,30 +131,47 @@ export default function AuditPage() {
               <tbody>
                 {data.items.map((log) => (
                   <tr key={log.id}>
-                    <td className="whitespace-nowrap text-xs text-muted">{formatDateTime(log.createdAt)}</td>
-                    <td className="max-w-[200px] truncate text-ivory/80">{log.actorEmail ?? <span className="text-muted">sistema</span>}</td>
+                    <td className="whitespace-nowrap text-xs text-muted">
+                      {formatDateTime(log.createdAt)}
+                    </td>
+                    <td className="max-w-[200px] truncate text-ivory/80">
+                      {log.actorEmail ?? <span className="text-muted">sistema</span>}
+                    </td>
                     <td className="whitespace-nowrap font-mono text-xs text-gold">{log.action}</td>
                     <td>
-                      <button type="button" className="font-mono text-xs text-ivory/80 hover:text-gold" onClick={() => update({ entity: log.entity })} title="Filtrar por esta entidade">
+                      <button
+                        type="button"
+                        className="font-mono text-xs text-ivory/80 hover:text-gold"
+                        onClick={() => update({ entity: log.entity })}
+                        title="Filtrar por esta entidade"
+                      >
                         {log.entity}
                       </button>
                     </td>
                     <td className="font-mono text-xs text-muted" title={log.entityId ?? undefined}>
                       {log.entityId ? `${log.entityId.slice(0, 8)}…` : '—'}
                     </td>
-                    <td className="min-w-[240px] max-w-md text-ivory/80">
+                    <td className="min-w-[160px] max-w-md text-ivory/80">
                       <span className="line-clamp-2" title={log.summary ?? undefined}>
                         {log.summary ?? '—'}
                       </span>
                     </td>
-                    <td className="whitespace-nowrap font-mono text-xs text-muted">{log.ip ?? '—'}</td>
+                    <td className="whitespace-nowrap font-mono text-xs text-muted">
+                      {log.ip ?? '—'}
+                    </td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
           <div className="px-4">
-            <Pagination page={data.page} totalPages={data.totalPages} total={data.total} label="registros" onChange={(page) => update({ page: String(page) })} />
+            <Pagination
+              page={data.page}
+              totalPages={data.totalPages}
+              total={data.total}
+              label="registros"
+              onChange={(page) => update({ page: String(page) })}
+            />
           </div>
         </div>
       )}

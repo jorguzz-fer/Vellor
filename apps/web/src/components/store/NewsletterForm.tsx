@@ -49,12 +49,22 @@ export function NewsletterForm({ source }: { source: string }) {
           className="w-full border-b border-line-strong bg-transparent pb-2 pr-8 text-sm text-cream placeholder:text-muted/70 focus:border-gold focus:outline-none"
           aria-label={t('home.newsletterPlaceholder')}
         />
-        <button type="submit" className="absolute right-0 top-0 text-ivory/60 hover:text-gold" aria-label={t('home.newsletterButton')} disabled={loading}>
+        <button
+          type="submit"
+          className="absolute right-0 top-0 text-ivory/60 hover:text-gold"
+          aria-label={t('home.newsletterButton')}
+          disabled={loading}
+        >
           <ArrowRight className="h-4 w-4" />
         </button>
       </div>
       <label className="flex cursor-pointer items-start gap-2 text-[11px] text-muted">
-        <input type="checkbox" className="mt-0.5 accent-gold" checked={consent} onChange={(e) => setConsent(e.target.checked)} />
+        <input
+          type="checkbox"
+          className="mt-0.5 accent-gold"
+          checked={consent}
+          onChange={(e) => setConsent(e.target.checked)}
+        />
         <span>
           {t('home.newsletterConsent').replace('Política de Privacidade.', '')}
           <Link to="/privacidade" className="link">

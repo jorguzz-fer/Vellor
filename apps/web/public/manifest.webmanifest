@@ -7,7 +7,5 @@
   "background_color": "#101f20",
   "theme_color": "#101f20",
   "lang": "pt-BR",
-  "icons": [
-    { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
-  ]
+  "icons": [{ "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
 }

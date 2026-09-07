@@ -21,7 +21,9 @@ function RouteError() {
   return (
     <div className="mx-auto flex max-w-xl flex-col items-center px-4 py-24 text-center">
       <span className="eyebrow">{notFound ? '404' : 'Erro'}</span>
-      <h1 className="heading mt-3 text-3xl">{notFound ? t('common.notFoundTitle') : t('common.error')}</h1>
+      <h1 className="heading mt-3 text-3xl">
+        {notFound ? t('common.notFoundTitle') : t('common.error')}
+      </h1>
       {!notFound && error?.message && <p className="mt-3 text-xs text-muted">{error.message}</p>}
       <LinkButton to="/" className="mt-8">
         {t('common.backHome')}

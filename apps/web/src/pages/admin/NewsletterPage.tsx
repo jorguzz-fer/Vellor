@@ -60,10 +60,16 @@ export default function NewsletterPage() {
       {query.isPending ? (
         <PageLoader />
       ) : query.isError ? (
-        <ErrorState message={query.error instanceof ApiError ? query.error.message : undefined} onRetry={() => query.refetch()} />
+        <ErrorState
+          message={query.error instanceof ApiError ? query.error.message : undefined}
+          onRetry={() => query.refetch()}
+        />
       ) : !data || data.items.length === 0 ? (
         <div className="card">
-          <EmptyState title="Nenhum inscrito" text="Os e-mails cadastrados na newsletter aparecerão aqui." />
+          <EmptyState
+            title="Nenhum inscrito"
+            text="Os e-mails cadastrados na newsletter aparecerão aqui."
+          />
         </div>
       ) : (
         <div className={`card transition-opacity ${query.isFetching ? 'opacity-70' : ''}`}>
@@ -82,15 +88,25 @@ export default function NewsletterPage() {
                   <tr key={subscriber.id}>
                     <td className="font-medium text-cream">{subscriber.email}</td>
                     <td className="text-ivory/80">{subscriber.name ?? '—'}</td>
-                    <td className="text-ivory/80">{SOURCE_LABELS[subscriber.source] ?? subscriber.source}</td>
-                    <td className="whitespace-nowrap text-xs text-muted">{formatDateTime(subscriber.consentAt)}</td>
+                    <td className="text-ivory/80">
+                      {SOURCE_LABELS[subscriber.source] ?? subscriber.source}
+                    </td>
+                    <td className="whitespace-nowrap text-xs text-muted">
+                      {formatDateTime(subscriber.consentAt)}
+                    </td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
           <div className="px-4">
-            <Pagination page={data.page} totalPages={data.totalPages} total={data.total} label="inscritos" onChange={setPage} />
+            <Pagination
+              page={data.page}
+              totalPages={data.totalPages}
+              total={data.total}
+              label="inscritos"
+              onChange={setPage}
+            />
           </div>
         </div>
       )}

@@ -8,7 +8,10 @@ export type FieldErrors = Record<string, string | undefined>;
  * Formulário mínimo com validação Zod (mesmos schemas da API) e mapeamento de
  * erros de campo vindos do servidor (RFC 7807 `errors`).
  */
-export function useZodForm<TSchema extends z.ZodType>(schema: TSchema, initial: Record<string, unknown>) {
+export function useZodForm<TSchema extends z.ZodType>(
+  schema: TSchema,
+  initial: Record<string, unknown>,
+) {
   const [values, setValues] = useState<Record<string, unknown>>(initial);
   const [errors, setErrors] = useState<FieldErrors>({});
   const [formError, setFormError] = useState<string | null>(null);
@@ -44,31 +47,45 @@ export function useZodForm<TSchema extends z.ZodType>(schema: TSchema, initial: 
   }, [schema, values]);
 
   const handleSubmit = useCallback(
-    (onValid: (data: z.output<TSchema>) => Promise<void> | void) => async (event?: { preventDefault?: () => void }) => {
-      event?.preventDefault?.();
-      setFormError(null);
-      const data = validate();
-      if (!data) return;
-      setSubmitting(true);
-      try {
-        await onValid(data);
-      } catch (error) {
-        if (error instanceof ApiError) {
-          if (error.errors) {
-            const next: FieldErrors = {};
-            for (const [field, messages] of Object.entries(error.errors)) next[field] = messages[0];
-            setErrors(next);
+    (onValid: (data: z.output<TSchema>) => Promise<void> | void) =>
+      async (event?: { preventDefault?: () => void }) => {
+        event?.preventDefault?.();
+        setFormError(null);
+        const data = validate();
+        if (!data) return;
+        setSubmitting(true);
+        try {
+          await onValid(data);
+        } catch (error) {
+          if (error instanceof ApiError) {
+            if (error.errors) {
+              const next: FieldErrors = {};
+              for (const [field, messages] of Object.entries(error.errors))
+                next[field] = messages[0];
+              setErrors(next);
+            }
+            setFormError(error.message);
+          } else {
+            setFormError(error instanceof Error ? error.message : 'Erro inesperado');
           }
-          setFormError(error.message);
-        } else {
-          setFormError(error instanceof Error ? error.message : 'Erro inesperado');
+        } finally {
+          setSubmitting(false);
         }
-      } finally {
-        setSubmitting(false);
-      }
-    },
+      },
     [validate],
   );
 
-  return { values, setField, setValues, errors, setErrors, formError, setFormError, submitting, handleSubmit, reset, validate };
+  return {
+    values,
+    setField,
+    setValues,
+    errors,
+    setErrors,
+    formError,
+    setFormError,
+    submitting,
+    handleSubmit,
+    reset,
+    validate,
+  };
 }

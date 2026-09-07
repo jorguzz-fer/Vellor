@@ -9,8 +9,18 @@ import {
   type ProductSummary,
   type ProductVariant,
 } from '@vellor/shared';
-import { ChevronRight, Heart, MessageCircle, Package, SearchX, Share2, ShieldCheck, ShoppingBag, Zap } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import {
+  ChevronRight,
+  Heart,
+  MessageCircle,
+  Package,
+  SearchX,
+  Share2,
+  ShieldCheck,
+  ShoppingBag,
+  Zap,
+} from 'lucide-react';
+import { type ReactNode, useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
 import { ProductGrid } from '@/components/ProductCard';
 import { ProductImage } from '@/components/ProductImage';
@@ -41,7 +51,10 @@ export default function ProductPage() {
     enabled: slug.length > 0,
   });
   const product = query.data?.product;
-  usePageMeta(product ? (product.seoTitle ?? product.name) : undefined, product ? (product.seoDescription ?? product.shortDescription ?? undefined) : undefined);
+  usePageMeta(
+    product ? (product.seoTitle ?? product.name) : undefined,
+    product ? (product.seoDescription ?? product.shortDescription ?? undefined) : undefined,
+  );
 
   if (query.isPending) return <PageLoader />;
 
@@ -55,7 +68,13 @@ export default function ProductPage() {
   }
 
   // A key reinicia o estado (variação, quantidade, imagem) ao navegar para outro produto.
-  return <ProductView key={query.data.product.id} product={query.data.product} related={query.data.related} />;
+  return (
+    <ProductView
+      key={query.data.product.id}
+      product={query.data.product}
+      related={query.data.related}
+    />
+  );
 }
 
 function ProductNotFound() {
@@ -86,28 +105,44 @@ function ProductView({ product, related }: { product: ProductDetail; related: Pr
   const { data: settings } = useSettings();
   const { quickAdd } = useQuickAdd();
 
-  const variants = useMemo(() => [...product.variants].sort((a, b) => a.position - b.position), [product.variants]);
-  const images = useMemo(() => [...product.images].sort((a, b) => a.position - b.position), [product.images]);
+  const variants = useMemo(
+    () => [...product.variants].sort((a, b) => a.position - b.position),
+    [product.variants],
+  );
+  const images = useMemo(
+    () => [...product.images].sort((a, b) => a.position - b.position),
+    [product.images],
+  );
 
-  const [variantId, setVariantId] = useState<string | null>(() => (variants.find((v) => v.inStock) ?? variants[0])?.id ?? null);
+  const [variantId, setVariantId] = useState<string | null>(
+    () => (variants.find((v) => v.inStock) ?? variants[0])?.id ?? null,
+  );
   const [quantity, setQuantity] = useState(1);
   const [activeImageId, setActiveImageId] = useState<string | null>(null);
 
-  const variant: ProductVariant | undefined = variants.find((v) => v.id === variantId) ?? variants[0];
+  const variant: ProductVariant | undefined =
+    variants.find((v) => v.id === variantId) ?? variants[0];
   const inStock = Boolean(variant?.inStock);
   const maxQuantity = Math.max(1, variant?.availableQuantity ?? 1);
   const qty = Math.min(quantity, maxQuantity);
 
-  const activeImage = images.find((i) => i.id === activeImageId) ?? images.find((i) => i.id === variant?.imageId) ?? images[0];
+  const activeImage =
+    images.find((i) => i.id === activeImageId) ??
+    images.find((i) => i.id === variant?.imageId) ??
+    images[0];
 
   const payments = settings?.payments ?? DEFAULT_STORE_SETTINGS.payments;
-  const handlingDays = settings?.shipping.handlingDays ?? DEFAULT_STORE_SETTINGS.shipping.handlingDays;
+  const handlingDays =
+    settings?.shipping.handlingDays ?? DEFAULT_STORE_SETTINGS.shipping.handlingDays;
   const installment = variant
     ? calculateInstallments(variant.priceCents, payments)
         .filter((o) => o.count > 1 && !o.hasInterest)
         .at(-1)
     : undefined;
-  const pixCents = variant && payments.pixDiscountPercent > 0 ? variant.priceCents - percentOf(variant.priceCents, payments.pixDiscountPercent) : null;
+  const pixCents =
+    variant && payments.pixDiscountPercent > 0
+      ? variant.priceCents - percentOf(variant.priceCents, payments.pixDiscountPercent)
+      : null;
 
   const availability =
     !variant || !variant.inStock
@@ -179,7 +214,10 @@ function ProductView({ product, related }: { product: ProductDetail; related: Pr
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 md:px-8 md:py-10">
       {/* Breadcrumb */}
-      <nav aria-label="Navegação estrutural" className="mb-6 text-[11px] uppercase tracking-[0.15em] text-muted">
+      <nav
+        aria-label="Navegação estrutural"
+        className="mb-6 text-[11px] uppercase tracking-[0.15em] text-muted"
+      >
         <ol className="flex flex-wrap items-center gap-1.5">
           <li>
             <Link to="/" className="hover:text-gold">
@@ -200,7 +238,10 @@ function ProductView({ product, related }: { product: ProductDetail; related: Pr
                 <ChevronRight className="h-3 w-3" />
               </li>
               <li>
-                <Link to={`${categoryPath(product.categorySlug)}?colecao=${encodeURIComponent(product.collectionSlug)}`} className="hover:text-gold">
+                <Link
+                  to={`${categoryPath(product.categorySlug)}?colecao=${encodeURIComponent(product.collectionSlug)}`}
+                  className="hover:text-gold"
+                >
                   {product.collectionName}
                 </Link>
               </li>
@@ -209,7 +250,10 @@ function ProductView({ product, related }: { product: ProductDetail; related: Pr
           <li aria-hidden="true">
             <ChevronRight className="h-3 w-3" />
           </li>
-          <li aria-current="page" className="max-w-[60vw] truncate normal-case tracking-normal text-ivory/80">
+          <li
+            aria-current="page"
+            className="max-w-[60vw] truncate normal-case tracking-normal text-ivory/80"
+          >
             {product.name}
           </li>
         </ol>
@@ -233,7 +277,11 @@ function ProductView({ product, related }: { product: ProductDetail; related: Pr
             </div>
           </div>
           {images.length > 1 && (
-            <div className="mt-3 grid grid-cols-5 gap-2" role="group" aria-label="Imagens do produto">
+            <div
+              className="mt-3 grid grid-cols-5 gap-2"
+              role="group"
+              aria-label="Imagens do produto"
+            >
               {images.map((image, index) => {
                 const active = image.id === activeImage?.id;
                 return (
@@ -245,7 +293,12 @@ function ProductView({ product, related }: { product: ProductDetail; related: Pr
                     aria-pressed={active}
                     className={`relative aspect-square overflow-hidden rounded-sm border transition-colors ${active ? 'border-gold' : 'border-line hover:border-line-strong'}`}
                   >
-                    <ProductImage src={image.url} alt="" kind={product.categoryKind} className="absolute inset-0" />
+                    <ProductImage
+                      src={image.url}
+                      alt=""
+                      kind={product.categoryKind}
+                      className="absolute inset-0"
+                    />
                   </button>
                 );
               })}
@@ -259,22 +312,39 @@ function ProductView({ product, related }: { product: ProductDetail; related: Pr
             {product.brand ?? product.categoryName}
             {product.collectionName ? ` · ${product.collectionName}` : ''}
           </span>
-          <h1 className="heading mt-2 text-3xl leading-tight md:text-4xl" data-testid="product-name">
+          <h1
+            className="heading mt-2 text-3xl leading-tight md:text-4xl"
+            data-testid="product-name"
+          >
             {product.name}
           </h1>
-          {product.shortDescription && <p className="mt-3 text-sm leading-relaxed text-ivory/80">{product.shortDescription}</p>}
+          {product.shortDescription && (
+            <p className="mt-3 text-sm leading-relaxed text-ivory/80">{product.shortDescription}</p>
+          )}
 
           <div className="mt-6 flex flex-wrap items-center gap-3">
-            {variant && <Price cents={variant.priceCents} compareAtCents={variant.compareAtPriceCents} size="lg" />}
+            {variant && (
+              <Price
+                cents={variant.priceCents}
+                compareAtCents={variant.compareAtPriceCents}
+                size="lg"
+              />
+            )}
             <Badge tone={availability.tone}>{availability.label}</Badge>
           </div>
           {installment && (
-            <p className="mt-1.5 text-xs text-muted">{t('catalog.installmentsHint', { count: installment.count, value: formatBRL(installment.installmentCents) })}</p>
+            <p className="mt-1.5 text-xs text-muted">
+              {t('catalog.installmentsHint', {
+                count: installment.count,
+                value: formatBRL(installment.installmentCents),
+              })}
+            </p>
           )}
           {pixCents !== null && (
             <p className="mt-1 flex items-center gap-1.5 text-xs text-gold">
               <Zap className="h-3.5 w-3.5" aria-hidden="true" />
-              {formatBRL(pixCents)} no Pix · {t('catalog.pixHint', { percent: payments.pixDiscountPercent })}
+              {formatBRL(pixCents)} no Pix ·{' '}
+              {t('catalog.pixHint', { percent: payments.pixDiscountPercent })}
             </p>
           )}
 
@@ -283,7 +353,11 @@ function ProductView({ product, related }: { product: ProductDetail; related: Pr
             <fieldset className="mt-7">
               <legend className="label">
                 {t('catalog.variant')}
-                {variant ? <span className="ml-1 normal-case tracking-normal text-ivory/80">· {variant.name}</span> : null}
+                {variant ? (
+                  <span className="ml-1 normal-case tracking-normal text-ivory/80">
+                    · {variant.name}
+                  </span>
+                ) : null}
               </legend>
               <div className="flex flex-wrap gap-2">
                 {variants.map((v) => {
@@ -298,7 +372,9 @@ function ProductView({ product, related }: { product: ProductDetail; related: Pr
                       aria-pressed={selected}
                       title={v.inStock ? v.name : `${v.name} — ${t('common.outOfStock')}`}
                       className={`rounded-sm border px-4 py-2 text-xs font-medium tracking-wide transition-colors disabled:cursor-not-allowed disabled:opacity-40 disabled:line-through ${
-                        selected ? 'border-gold bg-gold/10 text-gold' : 'border-line-strong text-ivory/85 hover:border-gold hover:text-gold'
+                        selected
+                          ? 'border-gold bg-gold/10 text-gold'
+                          : 'border-line-strong text-ivory/85 hover:border-gold hover:text-gold'
                       }`}
                     >
                       {v.name}
@@ -321,12 +397,23 @@ function ProductView({ product, related }: { product: ProductDetail; related: Pr
               <QuantityInput value={qty} min={1} max={maxQuantity} onChange={setQuantity} />
               {variant && inStock && (
                 <span className="text-[11px] text-muted">
-                  {variant.availableQuantity} {pluralize(variant.availableQuantity, 'unidade disponível', 'unidades disponíveis')}
+                  {variant.availableQuantity}{' '}
+                  {pluralize(
+                    variant.availableQuantity,
+                    'unidade disponível',
+                    'unidades disponíveis',
+                  )}
                 </span>
               )}
             </div>
             <div className="flex flex-col gap-3 sm:flex-row">
-              <Button data-testid="add-to-cart" onClick={handleAdd} disabled={!inStock} icon={<ShoppingBag className="h-4 w-4" />} full>
+              <Button
+                data-testid="add-to-cart"
+                onClick={handleAdd}
+                disabled={!inStock}
+                icon={<ShoppingBag className="h-4 w-4" />}
+                full
+              >
                 {t('catalog.addToCart')}
               </Button>
               <Button variant="secondary" onClick={handleBuyNow} disabled={!inStock} full>
@@ -334,7 +421,12 @@ function ProductView({ product, related }: { product: ProductDetail; related: Pr
               </Button>
             </div>
             {!inStock && (
-              <LinkButton to={contactPath} variant="secondary" icon={<MessageCircle className="h-4 w-4" />} full>
+              <LinkButton
+                to={contactPath}
+                variant="secondary"
+                icon={<MessageCircle className="h-4 w-4" />}
+                full
+              >
                 {t('catalog.consult')}
               </LinkButton>
             )}
@@ -344,7 +436,9 @@ function ProductView({ product, related }: { product: ProductDetail; related: Pr
                 onClick={toggleWishlist}
                 aria-pressed={saved}
                 className={`inline-flex items-center gap-2 rounded-sm border px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.15em] transition-colors ${
-                  saved ? 'border-gold bg-gold/10 text-gold' : 'border-line-strong text-ivory/80 hover:border-gold hover:text-gold'
+                  saved
+                    ? 'border-gold bg-gold/10 text-gold'
+                    : 'border-line-strong text-ivory/80 hover:border-gold hover:text-gold'
                 }`}
               >
                 <Heart className={`h-4 w-4 ${saved ? 'fill-current' : ''}`} />
@@ -363,10 +457,21 @@ function ProductView({ product, related }: { product: ProductDetail; related: Pr
 
           {/* Garantias */}
           <div className="mt-8 divide-y divide-line border-y border-line">
-            <TrustRow icon={<ShieldCheck className="h-4 w-4" />} title={t('catalog.authenticity')} text={t('catalog.authenticityText')} />
-            <TrustRow icon={<Package className="h-4 w-4" />} title={t('catalog.shippingInfo')} text={t('catalog.shippingInfoText', { days: handlingDays })} />
+            <TrustRow
+              icon={<ShieldCheck className="h-4 w-4" />}
+              title={t('catalog.authenticity')}
+              text={t('catalog.authenticityText')}
+            />
+            <TrustRow
+              icon={<Package className="h-4 w-4" />}
+              title={t('catalog.shippingInfo')}
+              text={t('catalog.shippingInfoText', { days: handlingDays })}
+            />
           </div>
-          <Link to={contactPath} className="link mt-5 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.15em]">
+          <Link
+            to={contactPath}
+            className="link mt-5 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.15em]"
+          >
             <MessageCircle className="h-4 w-4" />
             {t('catalog.askAbout')}
           </Link>
@@ -381,7 +486,9 @@ function ProductView({ product, related }: { product: ProductDetail; related: Pr
               <h2 id="description-heading" className="heading text-2xl">
                 {t('catalog.description')}
               </h2>
-              <p className="mt-4 whitespace-pre-line text-sm leading-relaxed text-ivory/85">{description}</p>
+              <p className="mt-4 whitespace-pre-line text-sm leading-relaxed text-ivory/85">
+                {description}
+              </p>
             </section>
           )}
           {specGroups.length > 0 && (
@@ -395,7 +502,10 @@ function ProductView({ product, related }: { product: ProductDetail; related: Pr
                     <h3 className="eyebrow">{group}</h3>
                     <dl className="mt-2 divide-y divide-line/70">
                       {rows.map((row) => (
-                        <div key={row.label} className="flex items-baseline justify-between gap-4 py-2 text-sm">
+                        <div
+                          key={row.label}
+                          className="flex items-baseline justify-between gap-4 py-2 text-sm"
+                        >
                           <dt className="shrink-0 text-muted">{row.label}</dt>
                           <dd className="text-right text-cream">{row.value}</dd>
                         </div>
@@ -422,14 +532,19 @@ function ProductView({ product, related }: { product: ProductDetail; related: Pr
   );
 }
 
-function TrustRow({ icon, title, text }: { icon: React.ReactNode; title: string; text: string }) {
+function TrustRow({ icon, title, text }: { icon: ReactNode; title: string; text: string }) {
   return (
     <div className="flex gap-4 py-4">
-      <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-gold/40 text-gold" aria-hidden="true">
+      <span
+        className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-gold/40 text-gold"
+        aria-hidden="true"
+      >
         {icon}
       </span>
       <div>
-        <h3 className="font-sans text-[11px] font-bold uppercase tracking-[0.2em] text-cream">{title}</h3>
+        <h3 className="font-sans text-[11px] font-bold uppercase tracking-[0.2em] text-cream">
+          {title}
+        </h3>
         <p className="mt-1 text-xs leading-relaxed text-muted">{text}</p>
       </div>
     </div>

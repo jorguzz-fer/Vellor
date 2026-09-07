@@ -29,11 +29,17 @@ export function CartDrawer() {
               <span className="text-muted">{t('common.subtotal')}</span>
               <span className="font-semibold text-gold">{formatBRL(cart.subtotalCents)}</span>
             </div>
-            <p className="text-[11px] text-muted">Frete com seguro e descontos calculados na próxima etapa.</p>
+            <p className="text-[11px] text-muted">
+              Frete com seguro e descontos calculados na próxima etapa.
+            </p>
             <LinkButton to="/checkout" full>
               {t('cart.checkout')}
             </LinkButton>
-            <Link to="/sacola" onClick={cart.close} className="block text-center text-[11px] uppercase tracking-[0.2em] text-ivory/70 hover:text-gold">
+            <Link
+              to="/sacola"
+              onClick={cart.close}
+              className="block text-center text-[11px] uppercase tracking-[0.2em] text-ivory/70 hover:text-gold"
+            >
               Ver sacola completa
             </Link>
           </div>
@@ -54,17 +60,42 @@ export function CartDrawer() {
       ) : (
         <ul className="space-y-4" data-testid="cart-items">
           {cart.items.map((item) => (
-            <li key={item.variantId} className="flex gap-4 rounded-sm border border-line bg-noir p-3">
-              <Link to={`/produto/${item.slug}`} onClick={cart.close} className="relative h-20 w-20 shrink-0 overflow-hidden rounded-sm">
-                <ProductImage src={item.imageUrl} alt={item.name} kind={item.categoryKind} className="absolute inset-0" />
+            <li
+              key={item.variantId}
+              className="flex gap-4 rounded-sm border border-line bg-noir p-3"
+            >
+              <Link
+                to={`/produto/${item.slug}`}
+                onClick={cart.close}
+                className="relative h-20 w-20 shrink-0 overflow-hidden rounded-sm"
+              >
+                <ProductImage
+                  src={item.imageUrl}
+                  alt={item.name}
+                  kind={item.categoryKind}
+                  className="absolute inset-0"
+                />
               </Link>
               <div className="min-w-0 flex-1">
-                <h4 className="truncate text-xs font-semibold uppercase tracking-wider text-cream">{item.name}</h4>
+                <h4 className="truncate text-xs font-semibold uppercase tracking-wider text-cream">
+                  {item.name}
+                </h4>
                 <p className="mt-0.5 text-[10px] text-muted">{item.variantName}</p>
                 <Price cents={item.unitPriceCents} size="sm" className="mt-1" />
                 <div className="mt-2 flex items-center justify-between">
-                  <QuantityInput size="sm" value={item.quantity} min={1} max={item.maxQuantity} onChange={(q) => cart.setQuantity(item.variantId, q)} />
-                  <button type="button" className="p-1 text-ivory/40 hover:text-danger" aria-label={t('common.remove')} onClick={() => cart.remove(item.variantId)}>
+                  <QuantityInput
+                    size="sm"
+                    value={item.quantity}
+                    min={1}
+                    max={item.maxQuantity}
+                    onChange={(q) => cart.setQuantity(item.variantId, q)}
+                  />
+                  <button
+                    type="button"
+                    className="p-1 text-ivory/40 hover:text-danger"
+                    aria-label={t('common.remove')}
+                    onClick={() => cart.remove(item.variantId)}
+                  >
                     <Trash2 className="h-3.5 w-3.5" />
                   </button>
                 </div>

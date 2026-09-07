@@ -1,4 +1,9 @@
-import { CONTACT_SUBJECT_LABELS, CONTACT_SUBJECTS, ContactInputSchema, DEFAULT_STORE_SETTINGS } from '@vellor/shared';
+import {
+  CONTACT_SUBJECT_LABELS,
+  CONTACT_SUBJECTS,
+  ContactInputSchema,
+  DEFAULT_STORE_SETTINGS,
+} from '@vellor/shared';
 import { Check, Clock, Mail, MessageCircle, Send, Tag, X } from 'lucide-react';
 import { type ReactNode, useState } from 'react';
 import { useSearchParams } from 'react-router';
@@ -16,7 +21,10 @@ import { useSettings } from '@/lib/queries';
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const MESSAGE_MAX = 2000;
 
-const SUBJECT_OPTIONS = CONTACT_SUBJECTS.map((subject) => ({ value: subject, label: CONTACT_SUBJECT_LABELS[subject] }));
+const SUBJECT_OPTIONS = CONTACT_SUBJECTS.map((subject) => ({
+  value: subject,
+  label: CONTACT_SUBJECT_LABELS[subject],
+}));
 
 function initialValues(productId: string | undefined): Record<string, unknown> {
   return {
@@ -42,7 +50,8 @@ export default function ContactPage() {
 
   const [sent, setSent] = useState(false);
   const form = useZodForm(ContactInputSchema, initialValues(productId));
-  const linkedProductId = typeof form.values.productId === 'string' ? form.values.productId : undefined;
+  const linkedProductId =
+    typeof form.values.productId === 'string' ? form.values.productId : undefined;
   const messageLength = String(form.values.message ?? '').length;
 
   const submit = form.handleSubmit(async (data) => {
@@ -62,7 +71,9 @@ export default function ContactPage() {
     setSent(false);
   };
 
-  const whatsappMessage = linkedProductId ? `Olá! Tenho uma dúvida sobre uma peça da ${store.name || 'Vellor'}.` : `Olá! Gostaria de falar com a ${store.name || 'Vellor'}.`;
+  const whatsappMessage = linkedProductId
+    ? `Olá! Tenho uma dúvida sobre uma peça da ${store.name || 'Vellor'}.`
+    : `Olá! Gostaria de falar com a ${store.name || 'Vellor'}.`;
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 md:px-8">
@@ -76,9 +87,17 @@ export default function ContactPage() {
         {/* Canais */}
         <div className="grid gap-4 sm:grid-cols-3 lg:col-span-4 lg:grid-cols-1 lg:content-start">
           <ChannelCard icon={<MessageCircle className="h-4 w-4" />} title="WhatsApp">
-            <p className="text-sm text-cream">{store.whatsapp ? formatPhoneBR(store.whatsapp) : '—'}</p>
+            <p className="text-sm text-cream">
+              {store.whatsapp ? formatPhoneBR(store.whatsapp) : '—'}
+            </p>
             {store.whatsapp && (
-              <LinkButton to={whatsappLink(store.whatsapp, whatsappMessage)} external size="sm" className="mt-3" icon={<MessageCircle className="h-3.5 w-3.5" />}>
+              <LinkButton
+                to={whatsappLink(store.whatsapp, whatsappMessage)}
+                external
+                size="sm"
+                className="mt-3"
+                icon={<MessageCircle className="h-3.5 w-3.5" />}
+              >
                 {t('contact.whatsapp')}
               </LinkButton>
             )}
@@ -93,20 +112,34 @@ export default function ContactPage() {
             )}
           </ChannelCard>
           <ChannelCard icon={<Clock className="h-4 w-4" />} title={t('contact.hours')}>
-            <p className="text-sm text-cream">{store.businessHours || DEFAULT_STORE_SETTINGS.store.businessHours}</p>
-            <p className="mt-1 text-xs text-muted">Sem loja física: atendimento pessoal e sob agendamento.</p>
+            <p className="text-sm text-cream">
+              {store.businessHours || DEFAULT_STORE_SETTINGS.store.businessHours}
+            </p>
+            <p className="mt-1 text-xs text-muted">
+              Sem loja física: atendimento pessoal e sob agendamento.
+            </p>
           </ChannelCard>
         </div>
 
         {/* Formulário */}
         <div className="lg:col-span-8">
           {sent ? (
-            <div className="card flex flex-col items-center px-6 py-12 text-center" role="status" data-testid="contact-success">
-              <span className="flex h-12 w-12 items-center justify-center rounded-full border border-success/50 text-success" aria-hidden="true">
+            <div
+              className="card flex flex-col items-center px-6 py-12 text-center"
+              role="status"
+              data-testid="contact-success"
+            >
+              <span
+                className="flex h-12 w-12 items-center justify-center rounded-full border border-success/50 text-success"
+                aria-hidden="true"
+              >
                 <Check className="h-5 w-5" />
               </span>
               <h2 className="heading mt-5 text-2xl">{t('contact.sent')}</h2>
-              <p className="mt-2 max-w-md text-sm text-muted">Se preferir uma resposta imediata, fale agora pelo WhatsApp em {store.businessHours.toLowerCase()}.</p>
+              <p className="mt-2 max-w-md text-sm text-muted">
+                Se preferir uma resposta imediata, fale agora pelo WhatsApp em{' '}
+                {store.businessHours.toLowerCase()}.
+              </p>
               <div className="mt-6 flex flex-col gap-3 sm:flex-row">
                 <Button variant="secondary" onClick={startAnother}>
                   Enviar outra mensagem
@@ -117,7 +150,12 @@ export default function ContactPage() {
               </div>
             </div>
           ) : (
-            <form onSubmit={submit} noValidate className="card space-y-5 p-6 md:p-8" data-testid="contact-form">
+            <form
+              onSubmit={submit}
+              noValidate
+              className="card space-y-5 p-6 md:p-8"
+              data-testid="contact-form"
+            >
               <div>
                 <h2 className="heading text-2xl">{t('contact.formTitle')}</h2>
                 <p className="mt-1 text-xs text-muted">
@@ -132,7 +170,12 @@ export default function ContactPage() {
                       <Tag className="h-4 w-4 shrink-0 text-gold" aria-hidden="true" />
                       Sua mensagem será vinculada à peça que você estava vendo.
                     </span>
-                    <button type="button" onClick={removeProduct} className="shrink-0 p-1 text-ivory/50 hover:text-danger" aria-label="Remover produto de interesse">
+                    <button
+                      type="button"
+                      onClick={removeProduct}
+                      className="shrink-0 p-1 text-ivory/50 hover:text-danger"
+                      aria-label="Remover produto de interesse"
+                    >
                       <X className="h-4 w-4" />
                     </button>
                   </div>
@@ -170,7 +213,9 @@ export default function ContactPage() {
                   inputMode="tel"
                   placeholder="(11) 99999-9999"
                   value={String(form.values.phone ?? '')}
-                  onChange={(e) => form.setField('phone', maskPhoneInput(e.target.value) || undefined)}
+                  onChange={(e) =>
+                    form.setField('phone', maskPhoneInput(e.target.value) || undefined)
+                  }
                   error={form.errors.phone}
                 />
                 <Select
@@ -197,7 +242,10 @@ export default function ContactPage() {
               />
 
               {/* Honeypot: fica fora da tela e deve permanecer vazio. */}
-              <div className="absolute -left-[9999px] top-auto h-px w-px overflow-hidden" aria-hidden="true">
+              <div
+                className="absolute -left-[9999px] top-auto h-px w-px overflow-hidden"
+                aria-hidden="true"
+              >
                 <label htmlFor="website">Website</label>
                 <input
                   id="website"
@@ -219,8 +267,15 @@ export default function ContactPage() {
               />
 
               <div className="flex flex-col gap-3 pt-2 sm:flex-row sm:items-center sm:justify-between">
-                <p className="text-[11px] text-muted">Seus dados são usados apenas para responder a esta mensagem.</p>
-                <Button type="submit" loading={form.submitting} icon={<Send className="h-4 w-4" />} className="w-full sm:w-auto">
+                <p className="text-[11px] text-muted">
+                  Seus dados são usados apenas para responder a esta mensagem.
+                </p>
+                <Button
+                  type="submit"
+                  loading={form.submitting}
+                  icon={<Send className="h-4 w-4" />}
+                  className="w-full sm:w-auto"
+                >
                   {t('contact.send')}
                 </Button>
               </div>
@@ -232,7 +287,15 @@ export default function ContactPage() {
   );
 }
 
-function ChannelCard({ icon, title, children }: { icon: ReactNode; title: string; children: ReactNode }) {
+function ChannelCard({
+  icon,
+  title,
+  children,
+}: {
+  icon: ReactNode;
+  title: string;
+  children: ReactNode;
+}) {
   return (
     <div className="card p-5">
       <span className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.2em] text-gold">

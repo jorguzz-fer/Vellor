@@ -1,4 +1,12 @@
-import { createContext, type ReactNode, useCallback, useContext, useEffect, useMemo, useReducer } from 'react';
+import {
+  createContext,
+  type ReactNode,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useReducer,
+} from 'react';
 
 export interface CartItem {
   variantId: string;
@@ -27,7 +35,10 @@ type Action =
   | { type: 'clear' }
   | { type: 'coupon'; code: string | null }
   | { type: 'shipping'; cep: string | null; service: 'PAC' | 'SEDEX' | null }
-  | { type: 'syncStock'; updates: Array<{ variantId: string; maxQuantity: number; unitPriceCents: number }> };
+  | {
+      type: 'syncStock';
+      updates: Array<{ variantId: string; maxQuantity: number; unitPriceCents: number }>;
+    };
 
 const STORAGE_KEY = 'vellor:cart:v1';
 const EMPTY: CartState = { items: [], couponCode: null, cep: null, shippingService: null };
@@ -38,16 +49,26 @@ function reducer(state: CartState, action: Action): CartState {
       const existing = state.items.find((i) => i.variantId === action.item.variantId);
       if (existing) {
         const quantity = Math.min(existing.maxQuantity, existing.quantity + action.quantity);
-        return { ...state, items: state.items.map((i) => (i.variantId === existing.variantId ? { ...i, quantity } : i)) };
+        return {
+          ...state,
+          items: state.items.map((i) =>
+            i.variantId === existing.variantId ? { ...i, quantity } : i,
+          ),
+        };
       }
       const quantity = Math.max(1, Math.min(action.item.maxQuantity, action.quantity));
       return { ...state, items: [...state.items, { ...action.item, quantity }] };
     }
     case 'setQuantity': {
-      if (action.quantity <= 0) return { ...state, items: state.items.filter((i) => i.variantId !== action.variantId) };
+      if (action.quantity <= 0)
+        return { ...state, items: state.items.filter((i) => i.variantId !== action.variantId) };
       return {
         ...state,
-        items: state.items.map((i) => (i.variantId === action.variantId ? { ...i, quantity: Math.min(i.maxQuantity, action.quantity) } : i)),
+        items: state.items.map((i) =>
+          i.variantId === action.variantId
+            ? { ...i, quantity: Math.min(i.maxQuantity, action.quantity) }
+            : i,
+        ),
       };
     }
     case 'remove':
@@ -66,7 +87,12 @@ function reducer(state: CartState, action: Action): CartState {
           .map((i) => {
             const u = byId.get(i.variantId);
             if (!u) return i;
-            return { ...i, maxQuantity: u.maxQuantity, unitPriceCents: u.unitPriceCents, quantity: Math.min(i.quantity, Math.max(u.maxQuantity, 0)) };
+            return {
+              ...i,
+              maxQuantity: u.maxQuantity,
+              unitPriceCents: u.unitPriceCents,
+              quantity: Math.min(i.quantity, Math.max(u.maxQuantity, 0)),
+            };
           })
           .filter((i) => i.quantity > 0),
       };
@@ -96,7 +122,9 @@ interface CartContextValue extends CartState {
   clear: () => void;
   setCoupon: (code: string | null) => void;
   setShipping: (cep: string | null, service: 'PAC' | 'SEDEX' | null) => void;
-  syncStock: (updates: Array<{ variantId: string; maxQuantity: number; unitPriceCents: number }>) => void;
+  syncStock: (
+    updates: Array<{ variantId: string; maxQuantity: number; unitPriceCents: number }>,
+  ) => void;
   isOpen: boolean;
   open: () => void;
   close: () => void;
@@ -167,7 +195,11 @@ function loadWishlist(): string[] {
 }
 
 export function WishlistProvider({ children }: { children: ReactNode }) {
-  const [slugs, setSlugs] = useReducer((_: string[], next: string[]) => next, undefined, loadWishlist);
+  const [slugs, setSlugs] = useReducer(
+    (_: string[], next: string[]) => next,
+    undefined,
+    loadWishlist,
+  );
   useEffect(() => {
     try {
       localStorage.setItem(WISHLIST_KEY, JSON.stringify(slugs));
@@ -176,10 +208,14 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
     }
   }, [slugs]);
   const toggle = useCallback(
-    (slug: string) => setSlugs(slugs.includes(slug) ? slugs.filter((s) => s !== slug) : [...slugs, slug]),
+    (slug: string) =>
+      setSlugs(slugs.includes(slug) ? slugs.filter((s) => s !== slug) : [...slugs, slug]),
     [slugs],
   );
-  const value = useMemo<WishlistContextValue>(() => ({ slugs, has: (slug) => slugs.includes(slug), toggle }), [slugs, toggle]);
+  const value = useMemo<WishlistContextValue>(
+    () => ({ slugs, has: (slug) => slugs.includes(slug), toggle }),
+    [slugs, toggle],
+  );
   return <WishlistContext.Provider value={value}>{children}</WishlistContext.Provider>;
 }
 

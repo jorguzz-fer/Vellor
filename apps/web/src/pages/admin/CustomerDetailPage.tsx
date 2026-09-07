@@ -1,5 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
-import { ORDER_STATUS_LABELS, type OrderStatus, PAYMENT_METHOD_LABELS, PAYMENT_STATUS_LABELS, type PaymentStatus } from '@vellor/shared';
+import {
+  ORDER_STATUS_LABELS,
+  type OrderStatus,
+  PAYMENT_METHOD_LABELS,
+  PAYMENT_STATUS_LABELS,
+  type PaymentStatus,
+} from '@vellor/shared';
 import { ArrowLeft, MapPin } from 'lucide-react';
 import type { ComponentProps, ReactNode } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
@@ -34,14 +40,25 @@ const PAYMENT_TONE: Record<PaymentStatus, Tone> = {
 export default function CustomerDetailPage() {
   const { id = '' } = useParams();
   const navigate = useNavigate();
-  const query = useQuery({ queryKey: ['admin', 'customer', id], queryFn: () => adminApi.customer(id), enabled: Boolean(id) });
-  usePageMeta(query.data ? `${query.data.name} · ${t('admin.customers')}` : `${t('admin.customers')} · ${t('admin.title')}`);
+  const query = useQuery({
+    queryKey: ['admin', 'customer', id],
+    queryFn: () => adminApi.customer(id),
+    enabled: Boolean(id),
+  });
+  usePageMeta(
+    query.data
+      ? `${query.data.name} · ${t('admin.customers')}`
+      : `${t('admin.customers')} · ${t('admin.title')}`,
+  );
 
   if (query.isPending) return <PageLoader />;
   if (query.isError) {
     return (
       <div className="mx-auto max-w-3xl space-y-4">
-        <ErrorState message={query.error instanceof ApiError ? query.error.message : undefined} onRetry={() => query.refetch()} />
+        <ErrorState
+          message={query.error instanceof ApiError ? query.error.message : undefined}
+          onRetry={() => query.refetch()}
+        />
         <div className="text-center">
           <LinkButton to="/admin/clientes" variant="secondary">
             {t('common.back')}
@@ -57,7 +74,10 @@ export default function CustomerDetailPage() {
     <div className="mx-auto max-w-7xl space-y-6">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <Link to="/admin/clientes" className="inline-flex items-center gap-1.5 text-[11px] uppercase tracking-[0.2em] text-muted transition-colors hover:text-gold">
+          <Link
+            to="/admin/clientes"
+            className="inline-flex items-center gap-1.5 text-[11px] uppercase tracking-[0.2em] text-muted transition-colors hover:text-gold"
+          >
             <ArrowLeft className="h-3.5 w-3.5" /> {t('admin.customers')}
           </Link>
           <div className="mt-2 flex flex-wrap items-center gap-3">
@@ -67,7 +87,9 @@ export default function CustomerDetailPage() {
           <p className="mt-1 text-xs text-muted">Cliente desde {formatDate(customer.createdAt)}</p>
         </div>
         <div className="text-right">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted">Total gasto</p>
+          <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted">
+            Total gasto
+          </p>
           <p className="font-display text-3xl text-gold">{formatBRL(customer.totalSpentCents)}</p>
           <p className="text-xs text-muted">
             {customer.ordersCount} {customer.ordersCount === 1 ? 'pedido' : 'pedidos'}
@@ -77,9 +99,9 @@ export default function CustomerDetailPage() {
 
       <div className="grid gap-6 lg:grid-cols-3">
         <section className="card p-5" aria-label="Dados do cliente">
-          <h2 className="heading mb-4 text-lg">{t('account.profile')}</h2>
+          <h2 className="heading mb-4 text-lg">Dados do cliente</h2>
           <dl className="space-y-3 text-sm">
-            <Row label={t('account.email')}>
+            <Row label={t('account.email')} stack>
               <a href={`mailto:${customer.email}`} className="link break-all">
                 {customer.email}
               </a>
@@ -94,9 +116,13 @@ export default function CustomerDetailPage() {
               )}
             </Row>
             <Row label={t('account.cpf')}>{customer.cpfMasked ?? '—'}</Row>
-            <Row label="Newsletter">{customer.newsletterOptIn ? t('common.yes') : t('common.no')}</Row>
+            <Row label="Newsletter">
+              {customer.newsletterOptIn ? t('common.yes') : t('common.no')}
+            </Row>
             <Row label="Cadastro">{formatDateTime(customer.createdAt)}</Row>
-            <Row label="Último pedido">{customer.lastOrderAt ? formatDateTime(customer.lastOrderAt) : '—'}</Row>
+            <Row label="Último pedido">
+              {customer.lastOrderAt ? formatDateTime(customer.lastOrderAt) : '—'}
+            </Row>
           </dl>
         </section>
 
@@ -107,7 +133,10 @@ export default function CustomerDetailPage() {
           ) : (
             <ul className="grid gap-3 md:grid-cols-2">
               {customer.addresses.map((address) => (
-                <li key={address.id} className="rounded-sm border border-line bg-noir/40 p-4 text-sm">
+                <li
+                  key={address.id}
+                  className="rounded-sm border border-line bg-noir/40 p-4 text-sm"
+                >
                   <div className="mb-2 flex items-center justify-between gap-2">
                     <span className="inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.2em] text-muted">
                       <MapPin className="h-3.5 w-3.5 text-gold" /> {address.label ?? 'Endereço'}
@@ -124,7 +153,9 @@ export default function CustomerDetailPage() {
                     {address.city} – {address.state}
                   </p>
                   <p className="text-ivory/80">CEP {formatCEP(address.cep)}</p>
-                  {address.reference && <p className="mt-1 text-xs text-muted">Ref.: {address.reference}</p>}
+                  {address.reference && (
+                    <p className="mt-1 text-xs text-muted">Ref.: {address.reference}</p>
+                  )}
                 </li>
               ))}
             </ul>
@@ -162,22 +193,33 @@ export default function CustomerDetailPage() {
                     }}
                   >
                     <td>
-                      <Link to={`/admin/pedidos/${order.id}`} className="font-medium text-gold hover:underline">
+                      <Link
+                        to={`/admin/pedidos/${order.id}`}
+                        className="font-medium text-gold hover:underline"
+                      >
                         {order.number}
                       </Link>
                     </td>
-                    <td className="whitespace-nowrap text-xs text-muted">{formatDateTime(order.createdAt)}</td>
+                    <td className="whitespace-nowrap text-xs text-muted">
+                      {formatDateTime(order.createdAt)}
+                    </td>
                     <td className="text-right">{order.itemCount}</td>
                     <td>
-                      <span className="block whitespace-nowrap text-xs">{PAYMENT_METHOD_LABELS[order.paymentMethod]}</span>
+                      <span className="block whitespace-nowrap text-xs">
+                        {PAYMENT_METHOD_LABELS[order.paymentMethod]}
+                      </span>
                       <Badge tone={PAYMENT_TONE[order.paymentStatus]} className="mt-1">
                         {PAYMENT_STATUS_LABELS[order.paymentStatus]}
                       </Badge>
                     </td>
                     <td>
-                      <Badge tone={STATUS_TONE[order.status]}>{ORDER_STATUS_LABELS[order.status]}</Badge>
+                      <Badge tone={STATUS_TONE[order.status]}>
+                        {ORDER_STATUS_LABELS[order.status]}
+                      </Badge>
                     </td>
-                    <td className="whitespace-nowrap text-right font-medium">{formatBRL(order.totalCents)}</td>
+                    <td className="whitespace-nowrap text-right font-medium">
+                      {formatBRL(order.totalCents)}
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -189,11 +231,16 @@ export default function CustomerDetailPage() {
   );
 }
 
-function Row({ label, children }: { label: string; children: ReactNode }) {
+/** Par rótulo/valor; `stack` mantém o valor abaixo do rótulo (para e-mails longos). */
+function Row({ label, children, stack }: { label: string; children: ReactNode; stack?: boolean }) {
   return (
-    <div className="flex flex-col gap-0.5 sm:flex-row sm:items-baseline sm:justify-between sm:gap-4">
-      <dt className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted">{label}</dt>
-      <dd className="text-ivory/90 sm:text-right">{children}</dd>
+    <div
+      className={`flex flex-col gap-0.5 ${stack ? '' : 'sm:flex-row sm:items-baseline sm:justify-between sm:gap-4'}`}
+    >
+      <dt className="shrink-0 text-[10px] font-semibold uppercase tracking-[0.2em] text-muted">
+        {label}
+      </dt>
+      <dd className={`min-w-0 text-ivory/90 ${stack ? '' : 'sm:text-right'}`}>{children}</dd>
     </div>
   );
 }

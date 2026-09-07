@@ -63,7 +63,11 @@ export default function AdminMfaPage() {
         navigate(from, { replace: true });
       }
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : 'Não foi possível validar o código. Tente novamente.');
+      setError(
+        err instanceof ApiError
+          ? err.message
+          : 'Não foi possível validar o código. Tente novamente.',
+      );
       setCode('');
     }
   };
@@ -80,8 +84,12 @@ export default function AdminMfaPage() {
               <ShieldCheck className="h-4 w-4" />
             </span>
             <div>
-              <h1 className="heading text-2xl">{setupMode ? t('auth.mfaSetupTitle') : t('auth.mfaTitle')}</h1>
-              <p className="mt-1 text-sm text-muted">{setupMode ? t('auth.mfaSetupText') : t('auth.mfaText')}</p>
+              <h1 className="heading text-2xl">
+                {setupMode ? t('auth.mfaSetupTitle') : t('auth.mfaTitle')}
+              </h1>
+              <p className="mt-1 text-sm text-muted">
+                {setupMode ? t('auth.mfaSetupText') : t('auth.mfaText')}
+              </p>
             </div>
           </div>
 
@@ -92,7 +100,10 @@ export default function AdminMfaPage() {
                   <Spinner size={28} />
                 </div>
               ) : setup.isError ? (
-                <ErrorState message={setup.error instanceof ApiError ? setup.error.message : undefined} onRetry={() => setup.refetch()} />
+                <ErrorState
+                  message={setup.error instanceof ApiError ? setup.error.message : undefined}
+                  onRetry={() => setup.refetch()}
+                />
               ) : (
                 <div className="flex flex-col items-center gap-4">
                   <img
@@ -104,7 +115,9 @@ export default function AdminMfaPage() {
                   />
                   <div className="w-full rounded-sm border border-line bg-noir/60 p-3 text-center">
                     <p className="label mb-1">{t('auth.mfaSetupSecret')}</p>
-                    <code className="break-all font-mono text-sm tracking-[0.15em] text-gold">{setup.data.secretMasked}</code>
+                    <code className="break-all font-mono text-sm tracking-[0.15em] text-gold">
+                      {setup.data.secretMasked}
+                    </code>
                   </div>
                 </div>
               )}
@@ -128,7 +141,13 @@ export default function AdminMfaPage() {
               disabled={setupMode && !setup.isSuccess}
               data-testid="mfa-code"
             />
-            <Button type="submit" full loading={submitting} disabled={setupMode && !setup.isSuccess} data-testid="mfa-submit">
+            <Button
+              type="submit"
+              full
+              loading={submitting}
+              disabled={setupMode && !setup.isSuccess}
+              data-testid="mfa-submit"
+            >
               {setupMode ? t('auth.mfaEnable') : t('auth.mfaVerify')}
             </Button>
           </form>

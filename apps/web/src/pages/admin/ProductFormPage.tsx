@@ -12,8 +12,26 @@ import {
   type ProductStatus,
   StockAdjustInputSchema,
 } from '@vellor/shared';
-import { Archive, ArrowDown, ArrowUp, ArrowLeft, Boxes, ExternalLink, ImagePlus, Plus, Save, Trash2 } from 'lucide-react';
-import { type ChangeEvent, type FormEvent, type InputHTMLAttributes, useEffect, useRef, useState } from 'react';
+import {
+  Archive,
+  ArrowDown,
+  ArrowUp,
+  ArrowLeft,
+  Boxes,
+  ExternalLink,
+  ImagePlus,
+  Plus,
+  Save,
+  Trash2,
+} from 'lucide-react';
+import {
+  type ChangeEvent,
+  type FormEvent,
+  type InputHTMLAttributes,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
 import type { z } from 'zod';
 import { ProductImage } from '@/components/ProductImage';
@@ -74,7 +92,10 @@ interface FormState {
   variants: VariantRow[];
 }
 
-const STATUS_OPTIONS = PRODUCT_STATUSES.map((status) => ({ value: status, label: PRODUCT_STATUS_LABELS[status] }));
+const STATUS_OPTIONS = PRODUCT_STATUSES.map((status) => ({
+  value: status,
+  label: PRODUCT_STATUS_LABELS[status],
+}));
 
 /** Mapeia campos da linha de variação para o caminho correspondente no schema (para limpar erros). */
 const VARIANT_ERROR_KEYS: Partial<Record<keyof VariantRow, string>> = {
@@ -169,9 +190,11 @@ function fromProduct(product: AdminProduct): FormState {
             name: variant.name,
             // A API devolve o preço efetivo (da variação ou, na falta, do produto):
             // quando é igual ao do produto tratamos como "herdado".
-            price: variant.priceCents === product.priceCents ? '' : centsToInput(variant.priceCents),
+            price:
+              variant.priceCents === product.priceCents ? '' : centsToInput(variant.priceCents),
             compareAtPrice:
-              variant.compareAtPriceCents === null || variant.compareAtPriceCents === product.compareAtPriceCents
+              variant.compareAtPriceCents === null ||
+              variant.compareAtPriceCents === product.compareAtPriceCents
                 ? ''
                 : centsToInput(variant.compareAtPriceCents),
             stock: String(variant.stockQuantity),
@@ -194,12 +217,16 @@ function parseNumber(value: string): number {
 }
 
 /** Monta o corpo enviado à API a partir do estado do formulário (validado depois com ProductInputSchema). */
-function buildPayload(form: FormState, allowedAttributeKeys: Set<string> | null): Record<string, unknown> {
+function buildPayload(
+  form: FormState,
+  allowedAttributeKeys: Set<string> | null,
+): Record<string, unknown> {
   const attributes: Record<string, string | number> = {};
   for (const [key, value] of Object.entries(form.attributes)) {
     if (value === '' || value === null || value === undefined) continue;
     // Chaves internas (prefixo "_") são preservadas; as demais só se pertencem à ficha do tipo atual.
-    if (key.startsWith('_') || !allowedAttributeKeys || allowedAttributeKeys.has(key)) attributes[key] = value;
+    if (key.startsWith('_') || !allowedAttributeKeys || allowedAttributeKeys.has(key))
+      attributes[key] = value;
   }
   return {
     name: form.name,
@@ -231,7 +258,9 @@ function buildPayload(form: FormState, allowedAttributeKeys: Set<string> | null)
         priceCents: inputToCents(variant.price),
         compareAtPriceCents: inputToCents(variant.compareAtPrice),
         stockQuantity: parseNumber(variant.stock),
-        optionValues: optionKey ? { ...variant.extraOptions, [optionKey]: variant.optionValue.trim() } : variant.extraOptions,
+        optionValues: optionKey
+          ? { ...variant.extraOptions, [optionKey]: variant.optionValue.trim() }
+          : variant.extraOptions,
         imageId: variant.imageId,
         position: index,
         isActive: variant.isActive,
@@ -243,9 +272,15 @@ function buildPayload(form: FormState, allowedAttributeKeys: Set<string> | null)
 /** Traduz as mensagens padrão (em inglês) do Zod; mensagens customizadas dos schemas já vêm em pt-BR. */
 function translateZodMessage(message: string): string {
   const rules: Array<[RegExp, (match: RegExpMatchArray) => string]> = [
-    [/^Too small: expected string to have >=(\d+) character/, (m) => (m[1] === '1' ? 'Campo obrigatório' : `Mínimo de ${m[1]} caracteres`)],
+    [
+      /^Too small: expected string to have >=(\d+) character/,
+      (m) => (m[1] === '1' ? 'Campo obrigatório' : `Mínimo de ${m[1]} caracteres`),
+    ],
     [/^Too big: expected string to have <=(\d+) character/, (m) => `Máximo de ${m[1]} caracteres`],
-    [/^Too small: expected array to have >=(\d+) item/, (m) => `Adicione pelo menos ${m[1]} ${m[1] === '1' ? 'item' : 'itens'}`],
+    [
+      /^Too small: expected array to have >=(\d+) item/,
+      (m) => `Adicione pelo menos ${m[1]} ${m[1] === '1' ? 'item' : 'itens'}`,
+    ],
     [/^Too big: expected array to have <=(\d+) item/, (m) => `Máximo de ${m[1]} itens`],
     [/^Too small: expected number to be >=?(-?[\d.]+)/, (m) => `Valor mínimo: ${m[1]}`],
     [/^Too big: expected number to be <=?(-?[\d.]+)/, (m) => `Valor máximo: ${m[1]}`],
@@ -308,7 +343,10 @@ function errorMessage(error: unknown, fallback = 'Erro inesperado. Tente novamen
 
 // ---------- Campos auxiliares ----------
 
-interface MoneyInputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'value' | 'onChange'> {
+interface MoneyInputProps extends Omit<
+  InputHTMLAttributes<HTMLInputElement>,
+  'value' | 'onChange'
+> {
   value: string;
   onChange: (value: string) => void;
   label?: string;
@@ -317,12 +355,25 @@ interface MoneyInputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'v
 }
 
 /** Entrada de moeda em reais (texto "1.234,56"); normaliza o formato ao sair do campo. */
-function MoneyInput({ value, onChange, label, hint, error, id, name, required, className = '', ...rest }: MoneyInputProps) {
+function MoneyInput({
+  value,
+  onChange,
+  label,
+  hint,
+  error,
+  id,
+  name,
+  required,
+  className = '',
+  ...rest
+}: MoneyInputProps) {
   const inputId = id ?? name;
   return (
     <Field label={label} hint={hint} error={error} required={required} htmlFor={inputId}>
       <div className="relative">
-        <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-xs text-muted">R$</span>
+        <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-xs text-muted">
+          R$
+        </span>
         <input
           id={inputId}
           name={name}
@@ -351,7 +402,11 @@ interface CellInputProps extends InputHTMLAttributes<HTMLInputElement> {
 function CellInput({ error, className = '', ...rest }: CellInputProps) {
   return (
     <div>
-      <input className={`input min-w-24 py-1.5 text-xs ${error ? 'border-danger' : ''} ${className}`} aria-invalid={Boolean(error)} {...rest} />
+      <input
+        className={`input min-w-24 py-1.5 text-xs ${error ? 'border-danger' : ''} ${className}`}
+        aria-invalid={Boolean(error)}
+        {...rest}
+      />
       {error && (
         <p className="mt-1 text-[11px] text-danger" role="alert">
           {error}
@@ -361,7 +416,15 @@ function CellInput({ error, className = '', ...rest }: CellInputProps) {
   );
 }
 
-function AttributeInput({ field, value, onChange }: { field: AttributeField; value: string | number | undefined; onChange: (value: string | number | undefined) => void }) {
+function AttributeInput({
+  field,
+  value,
+  onChange,
+}: {
+  field: AttributeField;
+  value: string | number | undefined;
+  onChange: (value: string | number | undefined) => void;
+}) {
   const name = `attr-${field.key}`;
   const label = field.unit ? `${field.label} (${field.unit})` : field.label;
   switch (field.type) {
@@ -375,7 +438,9 @@ function AttributeInput({ field, value, onChange }: { field: AttributeField; val
           inputMode="decimal"
           placeholder={field.placeholder}
           value={value === undefined ? '' : String(value)}
-          onChange={(event) => onChange(event.target.value === '' ? undefined : Number(event.target.value))}
+          onChange={(event) =>
+            onChange(event.target.value === '' ? undefined : Number(event.target.value))
+          }
         />
       );
     case 'select':
@@ -429,8 +494,16 @@ export default function ProductFormPage() {
     queryFn: () => adminApi.product(id ?? ''),
     enabled: isEdit,
   });
-  const categoriesQuery = useQuery({ queryKey: ['admin', 'categories'], queryFn: adminApi.categories, staleTime: 5 * 60_000 });
-  const collectionsQuery = useQuery({ queryKey: ['admin', 'collections'], queryFn: adminApi.collections, staleTime: 5 * 60_000 });
+  const categoriesQuery = useQuery({
+    queryKey: ['admin', 'categories'],
+    queryFn: adminApi.categories,
+    staleTime: 5 * 60_000,
+  });
+  const collectionsQuery = useQuery({
+    queryKey: ['admin', 'collections'],
+    queryFn: adminApi.collections,
+    staleTime: 5 * 60_000,
+  });
   const product = isEdit ? productQuery.data : undefined;
 
   usePageMeta(isEdit ? `Editar produto${product ? `: ${product.name}` : ''}` : 'Novo produto');
@@ -471,10 +544,13 @@ export default function ProductFormPage() {
   }, [isEdit, product]);
 
   const save = useMutation({
-    mutationFn: (input: ProductInput) => (id ? adminApi.updateProduct(id, input) : adminApi.createProduct(input)),
+    mutationFn: (input: ProductInput) =>
+      id ? adminApi.updateProduct(id, input) : adminApi.createProduct(input),
   });
   const adjust = useMutation({ mutationFn: adminApi.adjustStock });
-  const archive = useMutation({ mutationFn: (productId: string) => adminApi.deleteProduct(productId) });
+  const archive = useMutation({
+    mutationFn: (productId: string) => adminApi.deleteProduct(productId),
+  });
 
   const categories = categoriesQuery.data ?? [];
   const collections = collectionsQuery.data ?? [];
@@ -482,8 +558,12 @@ export default function ProductFormPage() {
   const kind: CategoryKind | undefined = selectedCategory?.kind;
   const attributeFields = kind ? attributesForKind(kind) : [];
   const attributeGroups = groupFields(attributeFields);
-  const categoryCollections = collections.filter((collection) => collection.categoryId === form.categoryId);
-  const savedVariants = form.variants.filter((variant): variant is VariantRow & { id: string } => Boolean(variant.id));
+  const categoryCollections = collections.filter(
+    (collection) => collection.categoryId === form.categoryId,
+  );
+  const savedVariants = form.variants.filter((variant): variant is VariantRow & { id: string } =>
+    Boolean(variant.id),
+  );
 
   // ---------- Atualizações de estado ----------
 
@@ -508,7 +588,9 @@ export default function ProductFormPage() {
 
   function setCategory(categoryId: string) {
     setForm((prev) => {
-      const keepCollection = collections.some((collection) => collection.id === prev.collectionId && collection.categoryId === categoryId);
+      const keepCollection = collections.some(
+        (collection) => collection.id === prev.collectionId && collection.categoryId === categoryId,
+      );
       return { ...prev, categoryId, collectionId: keepCollection ? prev.collectionId : '' };
     });
     clearErrors(['categoryId', 'collectionId']);
@@ -524,19 +606,33 @@ export default function ProductFormPage() {
   }
 
   function setVariant(index: number, patch: Partial<VariantRow>) {
-    setForm((prev) => ({ ...prev, variants: prev.variants.map((variant, i) => (i === index ? { ...variant, ...patch } : variant)) }));
-    clearErrors(Object.keys(patch).map((key) => `variants.${index}.${VARIANT_ERROR_KEYS[key as keyof VariantRow] ?? key}`));
+    setForm((prev) => ({
+      ...prev,
+      variants: prev.variants.map((variant, i) =>
+        i === index ? { ...variant, ...patch } : variant,
+      ),
+    }));
+    clearErrors(
+      Object.keys(patch).map(
+        (key) => `variants.${index}.${VARIANT_ERROR_KEYS[key as keyof VariantRow] ?? key}`,
+      ),
+    );
   }
 
   function addVariant() {
-    setForm((prev) => ({ ...prev, variants: [...prev.variants, emptyVariant(`Variação ${prev.variants.length + 1}`)] }));
+    setForm((prev) => ({
+      ...prev,
+      variants: [...prev.variants, emptyVariant(`Variação ${prev.variants.length + 1}`)],
+    }));
     clearErrors(['variants']);
   }
 
   function removeVariant(index: number) {
     setForm((prev) => ({ ...prev, variants: prev.variants.filter((_, i) => i !== index) }));
     // Os índices mudam: descarta os erros das variações para não apontar para a linha errada.
-    setErrors((prev) => Object.fromEntries(Object.entries(prev).filter(([key]) => !key.startsWith('variants.'))));
+    setErrors((prev) =>
+      Object.fromEntries(Object.entries(prev).filter(([key]) => !key.startsWith('variants.'))),
+    );
   }
 
   // ---------- Salvar ----------
@@ -550,18 +646,29 @@ export default function ProductFormPage() {
     }
     const next: FieldErrors = {};
     if (error.errors) {
-      for (const [field, messages] of Object.entries(error.errors)) next[field] = messages[0] ?? error.message;
+      for (const [field, messages] of Object.entries(error.errors))
+        next[field] = messages[0] ?? error.message;
     }
     if (error.code === 'sku_in_use') {
       // A API não diz qual SKU conflitou: destacamos as linhas novas ou cujo SKU foi alterado.
-      const candidates = form.variants.map((variant, index) => ({ variant, index })).filter(({ variant }) => !variant.id || variant.sku.trim().toUpperCase() !== variant.originalSku);
-      const targets = candidates.length ? candidates : form.variants.map((variant, index) => ({ variant, index }));
+      const candidates = form.variants
+        .map((variant, index) => ({ variant, index }))
+        .filter(
+          ({ variant }) => !variant.id || variant.sku.trim().toUpperCase() !== variant.originalSku,
+        );
+      const targets = candidates.length
+        ? candidates
+        : form.variants.map((variant, index) => ({ variant, index }));
       for (const { index } of targets) next[`variants.${index}.sku`] = error.message;
     }
     if (error.code === 'duplicate_sku') Object.assign(next, duplicateSkuErrors(form.variants));
     if (error.code === 'stock_below_reserved' || error.code === 'variant_reserved') {
       const match = /A variação (\S+) tem/.exec(error.message);
-      const index = match ? form.variants.findIndex((variant) => variant.sku.trim().toUpperCase() === match[1]?.toUpperCase()) : -1;
+      const index = match
+        ? form.variants.findIndex(
+            (variant) => variant.sku.trim().toUpperCase() === match[1]?.toUpperCase(),
+          )
+        : -1;
       if (index >= 0) next[`variants.${index}.stockQuantity`] = error.message;
     }
     setErrors((prev) => ({ ...prev, ...next }));
@@ -578,7 +685,8 @@ export default function ProductFormPage() {
       toast('Há SKUs repetidos nas variações', 'danger');
       return;
     }
-    const allowedKeys = kind && kind !== 'other' ? new Set(attributeFields.map((field) => field.key)) : null;
+    const allowedKeys =
+      kind && kind !== 'other' ? new Set(attributeFields.map((field) => field.key)) : null;
     const result = ProductInputSchema.safeParse(buildPayload(form, allowedKeys));
     if (!result.success) {
       setErrors(mapIssues(result.error.issues));
@@ -632,7 +740,13 @@ export default function ProductFormPage() {
         ...prev,
         variants: prev.variants.map((row) => {
           const variant = updated.variants.find((v) => v.id === row.id);
-          return variant ? { ...row, stock: String(variant.stockQuantity), reservedQuantity: variant.reservedQuantity } : row;
+          return variant
+            ? {
+                ...row,
+                stock: String(variant.stockQuantity),
+                reservedQuantity: variant.reservedQuantity,
+              }
+            : row;
         }),
       }));
       setStockOpen(false);
@@ -740,7 +854,12 @@ export default function ProductFormPage() {
 
   const ready = !isEdit || (product !== undefined && loadedFor.current === product.id);
   if (isEdit && productQuery.isError) {
-    return <ErrorState message={errorMessage(productQuery.error, 'Não foi possível carregar o produto')} onRetry={() => productQuery.refetch()} />;
+    return (
+      <ErrorState
+        message={errorMessage(productQuery.error, 'Não foi possível carregar o produto')}
+        onRetry={() => productQuery.refetch()}
+      />
+    );
   }
   if (categoriesQuery.isError || collectionsQuery.isError) {
     return (
@@ -753,7 +872,8 @@ export default function ProductFormPage() {
       />
     );
   }
-  if (productQuery.isLoading || categoriesQuery.isLoading || collectionsQuery.isLoading || !ready) return <PageLoader />;
+  if (productQuery.isLoading || categoriesQuery.isLoading || collectionsQuery.isLoading || !ready)
+    return <PageLoader />;
 
   const placeholderKind: CategoryKind = kind ?? 'other';
   const variantsError = errors.variants;
@@ -763,28 +883,59 @@ export default function ProductFormPage() {
       <form onSubmit={handleSubmit} noValidate>
         <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
           <div className="min-w-0">
-            <Link to="/admin/produtos" className="mb-1 inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-muted hover:text-gold">
+            <Link
+              to="/admin/produtos"
+              className="mb-1 inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-muted hover:text-gold"
+            >
               <ArrowLeft className="h-3 w-3" /> Produtos
             </Link>
-            <h1 className="heading truncate text-2xl">{isEdit ? product?.name || 'Editar produto' : 'Novo produto'}</h1>
+            <h1 className="heading truncate text-2xl">
+              {isEdit ? product?.name || 'Editar produto' : 'Novo produto'}
+            </h1>
           </div>
           <div className="flex flex-wrap items-center gap-2">
             {product?.status === 'active' && (
-              <LinkButton to={`/produto/${product.slug}`} external variant="ghost" size="sm" icon={<ExternalLink className="h-4 w-4" />}>
+              <LinkButton
+                to={`/produto/${product.slug}`}
+                external
+                variant="ghost"
+                size="sm"
+                icon={<ExternalLink className="h-4 w-4" />}
+              >
                 Ver na loja
               </LinkButton>
             )}
             {isEdit && (
-              <Button type="button" variant="secondary" size="sm" icon={<Boxes className="h-4 w-4" />} onClick={openStock} data-testid="product-adjust-stock">
+              <Button
+                type="button"
+                variant="secondary"
+                size="sm"
+                icon={<Boxes className="h-4 w-4" />}
+                onClick={openStock}
+                data-testid="product-adjust-stock"
+              >
                 Ajustar estoque
               </Button>
             )}
             {isEdit && (
-              <Button type="button" variant="danger" size="sm" icon={<Archive className="h-4 w-4" />} onClick={() => setArchiveOpen(true)} data-testid="product-archive">
+              <Button
+                type="button"
+                variant="danger"
+                size="sm"
+                icon={<Archive className="h-4 w-4" />}
+                onClick={() => setArchiveOpen(true)}
+                data-testid="product-archive"
+              >
                 Arquivar
               </Button>
             )}
-            <Button type="submit" size="sm" icon={<Save className="h-4 w-4" />} loading={save.isPending} data-testid="product-save">
+            <Button
+              type="submit"
+              size="sm"
+              icon={<Save className="h-4 w-4" />}
+              loading={save.isPending}
+              data-testid="product-save"
+            >
               Salvar
             </Button>
           </div>
@@ -820,7 +971,14 @@ export default function ProductFormPage() {
                 hint="Opcional. Se vazio, é gerado a partir do nome."
                 placeholder="submariner-date-41mm"
               />
-              <Input label="Marca" name="brand" value={form.brand} onChange={(event) => setField('brand', event.target.value)} error={errors.brand} placeholder="Ex.: Rolex" />
+              <Input
+                label="Marca"
+                name="brand"
+                value={form.brand}
+                onChange={(event) => setField('brand', event.target.value)}
+                error={errors.brand}
+                placeholder="Ex.: Rolex"
+              />
               <Select
                 label="Status"
                 name="status"
@@ -834,7 +992,10 @@ export default function ProductFormPage() {
                 label="Categoria"
                 name="categoryId"
                 required
-                options={categories.map((category) => ({ value: category.id, label: category.isActive ? category.name : `${category.name} (inativa)` }))}
+                options={categories.map((category) => ({
+                  value: category.id,
+                  label: category.isActive ? category.name : `${category.name} (inativa)`,
+                }))}
                 placeholder="Selecione a categoria"
                 value={form.categoryId}
                 onChange={(event) => setCategory(event.target.value)}
@@ -844,7 +1005,10 @@ export default function ProductFormPage() {
               <Select
                 label="Coleção"
                 name="collectionId"
-                options={categoryCollections.map((collection) => ({ value: collection.id, label: collection.name }))}
+                options={categoryCollections.map((collection) => ({
+                  value: collection.id,
+                  label: collection.name,
+                }))}
                 placeholder={form.categoryId ? 'Nenhuma' : 'Escolha a categoria primeiro'}
                 value={form.collectionId}
                 onChange={(event) => setField('collectionId', event.target.value)}
@@ -853,9 +1017,24 @@ export default function ProductFormPage() {
               />
             </div>
             <div className="mt-4 flex flex-wrap gap-x-6 gap-y-2">
-              <Checkbox name="isFeatured" label="Destaque na home" checked={form.isFeatured} onChange={(event) => setField('isFeatured', event.target.checked)} />
-              <Checkbox name="isNew" label="Novidade" checked={form.isNew} onChange={(event) => setField('isNew', event.target.checked)} />
-              <Checkbox name="isBestseller" label="Mais vendido" checked={form.isBestseller} onChange={(event) => setField('isBestseller', event.target.checked)} />
+              <Checkbox
+                name="isFeatured"
+                label="Destaque na home"
+                checked={form.isFeatured}
+                onChange={(event) => setField('isFeatured', event.target.checked)}
+              />
+              <Checkbox
+                name="isNew"
+                label="Novidade"
+                checked={form.isNew}
+                onChange={(event) => setField('isNew', event.target.checked)}
+              />
+              <Checkbox
+                name="isBestseller"
+                label="Mais vendido"
+                checked={form.isBestseller}
+                onChange={(event) => setField('isBestseller', event.target.checked)}
+              />
             </div>
             <div className="mt-4 space-y-4">
               <Textarea
@@ -884,7 +1063,15 @@ export default function ProductFormPage() {
           <section className="card p-5">
             <h2 className="heading mb-4 text-lg">Preço</h2>
             <div className="grid gap-4 md:grid-cols-2">
-              <MoneyInput label="Preço" name="priceCents" required value={form.price} onChange={(value) => setField('price', value)} error={errors.priceCents} data-testid="product-price" />
+              <MoneyInput
+                label="Preço"
+                name="priceCents"
+                required
+                value={form.price}
+                onChange={(value) => setField('price', value)}
+                error={errors.priceCents}
+                data-testid="product-price"
+              />
               <MoneyInput
                 label='Preço "de" (riscado)'
                 name="compareAtPriceCents"
@@ -900,16 +1087,27 @@ export default function ProductFormPage() {
           <section className="card p-5">
             <h2 className="heading mb-1 text-lg">Ficha técnica</h2>
             <p className="mb-4 text-xs text-muted">
-              {selectedCategory ? `Campos de ${selectedCategory.name.toLowerCase()}. Preencha o que for relevante para a peça.` : 'Escolha a categoria para ver os campos da ficha técnica.'}
+              {selectedCategory
+                ? `Campos de ${selectedCategory.name.toLowerCase()}. Preencha o que for relevante para a peça.`
+                : 'Escolha a categoria para ver os campos da ficha técnica.'}
             </p>
-            {selectedCategory && attributeGroups.length === 0 && <p className="text-sm text-muted">Esta categoria não possui ficha técnica configurada.</p>}
+            {selectedCategory && attributeGroups.length === 0 && (
+              <p className="text-sm text-muted">
+                Esta categoria não possui ficha técnica configurada.
+              </p>
+            )}
             <div className="space-y-6">
               {attributeGroups.map(([group, fields]) => (
                 <fieldset key={group}>
                   <legend className="eyebrow mb-3">{group}</legend>
                   <div className="grid gap-4 sm:grid-cols-2">
                     {fields.map((field) => (
-                      <AttributeInput key={field.key} field={field} value={form.attributes[field.key]} onChange={(value) => setAttribute(field.key, value)} />
+                      <AttributeInput
+                        key={field.key}
+                        field={field}
+                        value={form.attributes[field.key]}
+                        onChange={(value) => setAttribute(field.key, value)}
+                      />
                     ))}
                   </div>
                 </fieldset>
@@ -920,12 +1118,45 @@ export default function ProductFormPage() {
           {/* Logística */}
           <section className="card p-5">
             <h2 className="heading mb-1 text-lg">Logística</h2>
-            <p className="mb-4 text-xs text-muted">Peso e dimensões da embalagem, usados no cálculo do frete dos Correios.</p>
+            <p className="mb-4 text-xs text-muted">
+              Peso e dimensões da embalagem, usados no cálculo do frete dos Correios.
+            </p>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              <Input label="Peso (g)" name="weightGrams" type="number" inputMode="numeric" min={1} step={1} value={form.weightGrams} onChange={(event) => setField('weightGrams', event.target.value)} error={errors.weightGrams} />
-              <Input label="Comprimento (cm)" name="lengthCm" inputMode="decimal" value={form.lengthCm} onChange={(event) => setField('lengthCm', event.target.value)} error={errors.lengthCm} />
-              <Input label="Largura (cm)" name="widthCm" inputMode="decimal" value={form.widthCm} onChange={(event) => setField('widthCm', event.target.value)} error={errors.widthCm} />
-              <Input label="Altura (cm)" name="heightCm" inputMode="decimal" value={form.heightCm} onChange={(event) => setField('heightCm', event.target.value)} error={errors.heightCm} />
+              <Input
+                label="Peso (g)"
+                name="weightGrams"
+                type="number"
+                inputMode="numeric"
+                min={1}
+                step={1}
+                value={form.weightGrams}
+                onChange={(event) => setField('weightGrams', event.target.value)}
+                error={errors.weightGrams}
+              />
+              <Input
+                label="Comprimento (cm)"
+                name="lengthCm"
+                inputMode="decimal"
+                value={form.lengthCm}
+                onChange={(event) => setField('lengthCm', event.target.value)}
+                error={errors.lengthCm}
+              />
+              <Input
+                label="Largura (cm)"
+                name="widthCm"
+                inputMode="decimal"
+                value={form.widthCm}
+                onChange={(event) => setField('widthCm', event.target.value)}
+                error={errors.widthCm}
+              />
+              <Input
+                label="Altura (cm)"
+                name="heightCm"
+                inputMode="decimal"
+                value={form.heightCm}
+                onChange={(event) => setField('heightCm', event.target.value)}
+                error={errors.heightCm}
+              />
             </div>
           </section>
 
@@ -959,9 +1190,18 @@ export default function ProductFormPage() {
             <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
               <div>
                 <h2 className="heading text-lg">Variações</h2>
-                <p className="text-xs text-muted">Cada variação tem SKU e estoque próprios. Preço vazio usa o preço do produto.</p>
+                <p className="text-xs text-muted">
+                  Cada variação tem SKU e estoque próprios. Preço vazio usa o preço do produto.
+                </p>
               </div>
-              <Button type="button" variant="secondary" size="sm" icon={<Plus className="h-4 w-4" />} onClick={addVariant} data-testid="variant-add">
+              <Button
+                type="button"
+                variant="secondary"
+                size="sm"
+                icon={<Plus className="h-4 w-4" />}
+                onClick={addVariant}
+                data-testid="variant-add"
+              >
                 Adicionar variação
               </Button>
             </div>
@@ -996,7 +1236,9 @@ export default function ProductFormPage() {
                           <CellInput
                             aria-label={`SKU da variação ${index + 1}`}
                             value={variant.sku}
-                            onChange={(event) => setVariant(index, { sku: event.target.value.toUpperCase() })}
+                            onChange={(event) =>
+                              setVariant(index, { sku: event.target.value.toUpperCase() })
+                            }
                             error={fieldError('sku')}
                             className="font-mono uppercase"
                             placeholder="SKU-001"
@@ -1047,13 +1289,19 @@ export default function ProductFormPage() {
                             className="min-w-20"
                             data-testid="variant-stock"
                           />
-                          {variant.reservedQuantity > 0 && <p className="mt-1 text-[11px] text-muted">{variant.reservedQuantity} reservada(s) em pedidos</p>}
+                          {variant.reservedQuantity > 0 && (
+                            <p className="mt-1 text-[11px] text-muted">
+                              {variant.reservedQuantity} reservada(s) em pedidos
+                            </p>
+                          )}
                         </td>
                         <td>
                           <CellInput
                             aria-label={`Nome da opção da variação ${index + 1}`}
                             value={variant.optionKey}
-                            onChange={(event) => setVariant(index, { optionKey: event.target.value })}
+                            onChange={(event) =>
+                              setVariant(index, { optionKey: event.target.value })
+                            }
                             error={fieldError('optionValues')}
                             placeholder="Ex.: Volume"
                           />
@@ -1062,7 +1310,9 @@ export default function ProductFormPage() {
                           <CellInput
                             aria-label={`Valor da opção da variação ${index + 1}`}
                             value={variant.optionValue}
-                            onChange={(event) => setVariant(index, { optionValue: event.target.value })}
+                            onChange={(event) =>
+                              setVariant(index, { optionValue: event.target.value })
+                            }
                             placeholder="Ex.: 100 ml"
                           />
                         </td>
@@ -1072,7 +1322,9 @@ export default function ProductFormPage() {
                             className="h-4 w-4 cursor-pointer accent-gold"
                             aria-label={`Variação ${index + 1} ativa`}
                             checked={variant.isActive}
-                            onChange={(event) => setVariant(index, { isActive: event.target.checked })}
+                            onChange={(event) =>
+                              setVariant(index, { isActive: event.target.checked })
+                            }
                           />
                         </td>
                         <td className="text-right">
@@ -1082,7 +1334,11 @@ export default function ProductFormPage() {
                             onClick={() => removeVariant(index)}
                             disabled={form.variants.length <= 1}
                             aria-label={`Remover variação ${index + 1}`}
-                            title={form.variants.length <= 1 ? 'O produto precisa de pelo menos uma variação' : 'Remover variação'}
+                            title={
+                              form.variants.length <= 1
+                                ? 'O produto precisa de pelo menos uma variação'
+                                : 'Remover variação'
+                            }
                           >
                             <Trash2 className="h-4 w-4" />
                           </button>
@@ -1094,7 +1350,9 @@ export default function ProductFormPage() {
               </table>
             </div>
             {isEdit && form.variants.some((variant) => !variant.id) && (
-              <p className="mt-3 text-xs text-muted">Variações novas passam a existir ao salvar o produto.</p>
+              <p className="mt-3 text-xs text-muted">
+                Variações novas passam a existir ao salvar o produto.
+              </p>
             )}
           </section>
 
@@ -1103,13 +1361,25 @@ export default function ProductFormPage() {
             <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
               <div>
                 <h2 className="heading text-lg">Imagens</h2>
-                <p className="text-xs text-muted">A primeira imagem é a principal. JPG, PNG ou WebP.</p>
+                <p className="text-xs text-muted">
+                  A primeira imagem é a principal. JPG, PNG ou WebP.
+                </p>
               </div>
               {isEdit && (
-                <label className={`btn-secondary cursor-pointer ${upload ? 'pointer-events-none opacity-50' : ''}`}>
+                <label
+                  className={`btn-secondary cursor-pointer ${upload ? 'pointer-events-none opacity-50' : ''}`}
+                >
                   <ImagePlus className="h-4 w-4" />
                   Enviar imagens
-                  <input type="file" multiple accept="image/*" className="sr-only" onChange={handleFiles} disabled={Boolean(upload)} data-testid="product-image-input" />
+                  <input
+                    type="file"
+                    multiple
+                    accept="image/*"
+                    className="sr-only"
+                    onChange={handleFiles}
+                    disabled={Boolean(upload)}
+                    data-testid="product-image-input"
+                  />
                 </label>
               )}
             </div>
@@ -1123,18 +1393,28 @@ export default function ProductFormPage() {
                       Enviando {Math.min(upload.done + 1, upload.total)} de {upload.total}…
                     </p>
                     <div className="h-1.5 w-full overflow-hidden rounded-sm bg-noir">
-                      <div className="h-full bg-gold transition-all" style={{ width: `${Math.round((upload.done / upload.total) * 100)}%` }} />
+                      <div
+                        className="h-full bg-gold transition-all"
+                        style={{ width: `${Math.round((upload.done / upload.total) * 100)}%` }}
+                      />
                     </div>
                   </div>
                 )}
                 {images.length === 0 ? (
-                  <p className="text-sm text-muted">Nenhuma imagem enviada. Enquanto isso a loja exibe uma ilustração da categoria.</p>
+                  <p className="text-sm text-muted">
+                    Nenhuma imagem enviada. Enquanto isso a loja exibe uma ilustração da categoria.
+                  </p>
                 ) : (
                   <ul className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
                     {images.map((image, index) => (
                       <li key={image.id} className="card overflow-hidden">
                         <div className="relative aspect-square">
-                          <ProductImage src={image.url} alt={image.alt ?? ''} kind={placeholderKind} className="absolute inset-0" />
+                          <ProductImage
+                            src={image.url}
+                            alt={image.alt ?? ''}
+                            kind={placeholderKind}
+                            className="absolute inset-0"
+                          />
                           {index === 0 && (
                             <span className="absolute left-2 top-2">
                               <Badge tone="gold">Principal</Badge>
@@ -1170,7 +1450,12 @@ export default function ProductFormPage() {
                                 <ArrowDown className="h-4 w-4" />
                               </button>
                             </div>
-                            <button type="button" className="rounded p-1.5 text-ivory/60 hover:text-danger" onClick={() => setImageToDelete(image)} aria-label="Remover imagem">
+                            <button
+                              type="button"
+                              className="rounded p-1.5 text-ivory/60 hover:text-danger"
+                              onClick={() => setImageToDelete(image)}
+                              aria-label="Remover imagem"
+                            >
                               <Trash2 className="h-4 w-4" />
                             </button>
                           </div>
@@ -1202,10 +1487,20 @@ export default function ProductFormPage() {
         size="sm"
         footer={
           <>
-            <Button type="button" variant="secondary" onClick={() => setStockOpen(false)} disabled={adjust.isPending}>
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={() => setStockOpen(false)}
+              disabled={adjust.isPending}
+            >
               Cancelar
             </Button>
-            <Button type="button" onClick={submitStock} loading={adjust.isPending} data-testid="stock-confirm">
+            <Button
+              type="button"
+              onClick={submitStock}
+              loading={adjust.isPending}
+              data-testid="stock-confirm"
+            >
               Confirmar ajuste
             </Button>
           </>
@@ -1220,10 +1515,15 @@ export default function ProductFormPage() {
               <Select
                 label="Variação"
                 name="stock-variant"
-                options={savedVariants.map((variant) => ({ value: variant.id, label: `${variant.name} · ${variant.sku} · estoque ${variant.stock}` }))}
+                options={savedVariants.map((variant) => ({
+                  value: variant.id,
+                  label: `${variant.name} · ${variant.sku} · estoque ${variant.stock}`,
+                }))}
                 placeholder="Selecione"
                 value={stockForm.variantId}
-                onChange={(event) => setStockForm((prev) => ({ ...prev, variantId: event.target.value }))}
+                onChange={(event) =>
+                  setStockForm((prev) => ({ ...prev, variantId: event.target.value }))
+                }
                 error={stockErrors.variantId}
               />
               <Input
@@ -1233,7 +1533,9 @@ export default function ProductFormPage() {
                 step={1}
                 inputMode="numeric"
                 value={stockForm.delta}
-                onChange={(event) => setStockForm((prev) => ({ ...prev, delta: event.target.value }))}
+                onChange={(event) =>
+                  setStockForm((prev) => ({ ...prev, delta: event.target.value }))
+                }
                 error={stockErrors.delta}
                 hint="Use valores negativos para dar baixa. O estoque não pode ficar abaixo das unidades reservadas."
                 placeholder="Ex.: 5 ou -2"
@@ -1243,7 +1545,9 @@ export default function ProductFormPage() {
                 label="Motivo"
                 name="stock-reason"
                 value={stockForm.reason}
-                onChange={(event) => setStockForm((prev) => ({ ...prev, reason: event.target.value }))}
+                onChange={(event) =>
+                  setStockForm((prev) => ({ ...prev, reason: event.target.value }))
+                }
                 error={stockErrors.reason}
                 placeholder="Ex.: Recebimento de fornecedor"
                 data-testid="stock-reason"
@@ -1260,7 +1564,8 @@ export default function ProductFormPage() {
         title="Arquivar produto"
         text={
           <p>
-            O produto <strong className="text-cream">{product?.name}</strong> deixará de aparecer na loja e na lista de produtos. Pedidos já realizados não são afetados.
+            O produto <strong className="text-cream">{product?.name}</strong> deixará de aparecer na
+            loja e na lista de produtos. Pedidos já realizados não são afetados.
           </p>
         }
         confirmLabel="Arquivar"

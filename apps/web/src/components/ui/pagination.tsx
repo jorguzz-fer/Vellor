@@ -11,12 +11,21 @@ interface PaginationProps {
 export function Pagination({ page, totalPages, total, onChange, label }: PaginationProps) {
   if (totalPages <= 1 && !total) return null;
   return (
-    <nav className="flex items-center justify-between gap-4 py-4 text-xs text-muted" aria-label="Paginação">
+    <nav
+      className="flex items-center justify-between gap-4 py-4 text-xs text-muted"
+      aria-label="Paginação"
+    >
       <span>
         {total !== undefined ? `${total} ${label ?? 'itens'} · ` : ''}Página {page} de {totalPages}
       </span>
       <div className="flex items-center gap-1">
-        <button type="button" className="btn-ghost px-2" onClick={() => onChange(page - 1)} disabled={page <= 1} aria-label="Página anterior">
+        <button
+          type="button"
+          className="btn-ghost px-2"
+          onClick={() => onChange(page - 1)}
+          disabled={page <= 1}
+          aria-label="Página anterior"
+        >
           <ChevronLeft className="h-4 w-4" />
         </button>
         {pageWindow(page, totalPages).map((p, i) =>
@@ -36,7 +45,13 @@ export function Pagination({ page, totalPages, total, onChange, label }: Paginat
             </button>
           ),
         )}
-        <button type="button" className="btn-ghost px-2" onClick={() => onChange(page + 1)} disabled={page >= totalPages} aria-label="Próxima página">
+        <button
+          type="button"
+          className="btn-ghost px-2"
+          onClick={() => onChange(page + 1)}
+          disabled={page >= totalPages}
+          aria-label="Próxima página"
+        >
           <ChevronRight className="h-4 w-4" />
         </button>
       </div>

@@ -26,18 +26,35 @@ export const queryKeys = {
 };
 
 export function useSettings() {
-  return useQuery({ queryKey: queryKeys.settings, queryFn: settingsApi.get, staleTime: 5 * 60_000 });
+  return useQuery({
+    queryKey: queryKeys.settings,
+    queryFn: settingsApi.get,
+    staleTime: 5 * 60_000,
+  });
 }
 
 export function useCategories() {
-  return useQuery({ queryKey: queryKeys.categories, queryFn: catalogApi.categories, staleTime: 5 * 60_000 });
+  return useQuery({
+    queryKey: queryKeys.categories,
+    queryFn: catalogApi.categories,
+    staleTime: 5 * 60_000,
+  });
 }
 
 export function useCollections(category?: string) {
-  return useQuery({ queryKey: queryKeys.collections(category), queryFn: () => catalogApi.collections(category), staleTime: 5 * 60_000 });
+  return useQuery({
+    queryKey: queryKeys.collections(category),
+    queryFn: () => catalogApi.collections(category),
+    staleTime: 5 * 60_000,
+  });
 }
 
-const ANONYMOUS: AuthStatus = { authenticated: false, user: null, mfaSetupRequired: false, mfaPending: false };
+const ANONYMOUS: AuthStatus = {
+  authenticated: false,
+  user: null,
+  mfaSetupRequired: false,
+  mfaPending: false,
+};
 
 export function useAuth() {
   const query = useQuery({ queryKey: queryKeys.auth, queryFn: authApi.me, staleTime: 60_000 });
@@ -56,16 +73,30 @@ export function useAuthMutations() {
   const apply = (status: AuthStatus) => {
     client.setQueryData(queryKeys.auth, status);
   };
-  const login = useMutation({ mutationFn: (input: LoginInput) => authApi.login(input), onSuccess: apply });
-  const register = useMutation({ mutationFn: (input: RegisterInput) => authApi.register(input), onSuccess: apply });
+  const login = useMutation({
+    mutationFn: (input: LoginInput) => authApi.login(input),
+    onSuccess: apply,
+  });
+  const register = useMutation({
+    mutationFn: (input: RegisterInput) => authApi.register(input),
+    onSuccess: apply,
+  });
   const logout = useMutation({
     mutationFn: authApi.logout,
     onSuccess: () => {
       apply(ANONYMOUS);
-      client.removeQueries({ predicate: (q) => q.queryKey[0] === 'account' || q.queryKey[0] === 'admin' });
+      client.removeQueries({
+        predicate: (q) => q.queryKey[0] === 'account' || q.queryKey[0] === 'admin',
+      });
     },
   });
-  const mfaVerify = useMutation({ mutationFn: (code: string) => authApi.mfaVerify(code), onSuccess: apply });
-  const mfaEnable = useMutation({ mutationFn: (code: string) => authApi.mfaEnable(code), onSuccess: apply });
+  const mfaVerify = useMutation({
+    mutationFn: (code: string) => authApi.mfaVerify(code),
+    onSuccess: apply,
+  });
+  const mfaEnable = useMutation({
+    mutationFn: (code: string) => authApi.mfaEnable(code),
+    onSuccess: apply,
+  });
   return { login, register, logout, mfaVerify, mfaEnable, apply };
 }

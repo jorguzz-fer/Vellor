@@ -76,7 +76,8 @@ export const ptBR = {
   home: {
     heroEyebrow: 'Curadoria Vellor',
     heroTitle: 'Tempo e memória, em sua forma mais rara',
-    heroText: 'Relógios de alta relojoaria e perfumes de nicho com autenticidade garantida, envio segurado para todo o Brasil e atendimento pessoal.',
+    heroText:
+      'Relógios de alta relojoaria e perfumes de nicho com autenticidade garantida, envio segurado para todo o Brasil e atendimento pessoal.',
     heroCtaWatches: 'Ver relógios',
     heroCtaPerfumes: 'Ver perfumes',
     featured: 'Destaques da curadoria',
@@ -125,9 +126,11 @@ export const ptBR = {
     installmentsHint: 'ou em até {count}x de {value} sem juros',
     pixHint: '{percent}% de desconto no Pix',
     authenticity: 'Autenticidade e garantia',
-    authenticityText: 'Cada peça é verificada por especialistas e enviada com nota fiscal, certificado e embalagem original quando disponível.',
+    authenticityText:
+      'Cada peça é verificada por especialistas e enviada com nota fiscal, certificado e embalagem original quando disponível.',
     shippingInfo: 'Envio e devolução',
-    shippingInfoText: 'Postagem em até {days} dias úteis após a confirmação do pagamento, pelos Correios com seguro do valor total. Troca ou devolução em até 7 dias após o recebimento.',
+    shippingInfoText:
+      'Postagem em até {days} dias úteis após a confirmação do pagamento, pelos Correios com seguro do valor total. Troca ou devolução em até 7 dias após o recebimento.',
     askAbout: 'Tirar dúvidas sobre esta peça',
   },
   cart: {
@@ -203,7 +206,8 @@ export const ptBR = {
     thanks: 'Obrigado pela sua compra',
     pending: 'Aguardando pagamento',
     payPix: 'Pague com Pix',
-    pixInstructions: 'Abra o app do seu banco, escolha Pix e escaneie o QR code ou copie o código abaixo.',
+    pixInstructions:
+      'Abra o app do seu banco, escolha Pix e escaneie o QR code ou copie o código abaixo.',
     pixCopy: 'Copiar código Pix',
     pixExpires: 'Válido até {time}',
     payBoleto: 'Boleto gerado',
@@ -225,7 +229,8 @@ export const ptBR = {
     payment: 'Pagamento',
     timeline: 'Acompanhamento',
     notFound: 'Pedido não encontrado ou link inválido.',
-    waitingConfirmation: 'Assim que o pagamento for identificado esta página será atualizada automaticamente.',
+    waitingConfirmation:
+      'Assim que o pagamento for identificado esta página será atualizada automaticamente.',
     simulate: 'Simular pagamento aprovado (ambiente de testes)',
     help: 'Precisa de ajuda com este pedido?',
   },
@@ -245,7 +250,8 @@ export const ptBR = {
     acceptTerms: 'Li e aceito os Termos e a Política de privacidade.',
     newsletter: 'Quero receber novidades por e-mail.',
     forgotTitle: 'Recuperar senha',
-    forgotText: 'Informe seu e-mail. Se houver uma conta, enviaremos um link para redefinir a senha.',
+    forgotText:
+      'Informe seu e-mail. Se houver uma conta, enviaremos um link para redefinir a senha.',
     forgotDone: 'Se o e-mail estiver cadastrado, você receberá o link em instantes.',
     resetTitle: 'Nova senha',
     resetDone: 'Senha redefinida. Faça login com a nova senha.',
@@ -301,7 +307,8 @@ export const ptBR = {
     mfaCode: 'Código',
     mfaVerify: 'Verificar',
     mfaSetupTitle: 'Ative a verificação em duas etapas',
-    mfaSetupText: 'Por segurança, o acesso ao painel exige um segundo fator. Escaneie o QR code com o Google Authenticator, Authy ou 1Password e informe o código gerado.',
+    mfaSetupText:
+      'Por segurança, o acesso ao painel exige um segundo fator. Escaneie o QR code com o Google Authenticator, Authy ou 1Password e informe o código gerado.',
     mfaSetupSecret: 'Chave manual',
     mfaEnable: 'Ativar',
     sessionExpired: 'Sua sessão expirou. Entre novamente.',
@@ -333,7 +340,9 @@ export type MessageKey = Leaves<typeof ptBR>;
 
 /** Busca uma mensagem pela chave (ex.: t('nav.watches')) e substitui {placeholders}. */
 export function t(key: MessageKey, params?: Record<string, string | number>): string {
-  const value = key.split('.').reduce<unknown>((acc, part) => (acc as Record<string, unknown>)?.[part], ptBR);
+  const value = key
+    .split('.')
+    .reduce<unknown>((acc, part) => (acc as Record<string, unknown>)?.[part], ptBR);
   let text = typeof value === 'string' ? value : key;
   if (params) {
     for (const [name, replacement] of Object.entries(params)) {

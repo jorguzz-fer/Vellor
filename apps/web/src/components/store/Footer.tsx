@@ -21,9 +21,31 @@ export function Footer() {
             </div>
           </div>
           <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 md:col-span-7">
-            <FooterColumn title={t('footer.shop')} links={[{ to: '/relogios', label: t('nav.watches') }, { to: '/perfumes', label: t('nav.perfumes') }, { to: '/favoritos', label: t('nav.wishlist') }, { to: '/sacola', label: t('nav.cart') }]} />
-            <FooterColumn title={t('footer.help')} links={[{ to: '/atendimento', label: t('nav.contact') }, { to: '/trocas', label: t('legal.exchanges') }, { to: '/termos', label: t('legal.terms') }, { to: '/conta', label: t('nav.account') }]} />
-            <FooterColumn title={t('footer.company')} links={[{ to: '/sobre', label: t('footer.about') }, { to: '/privacidade', label: t('legal.privacy') }]}>
+            <FooterColumn
+              title={t('footer.shop')}
+              links={[
+                { to: '/relogios', label: t('nav.watches') },
+                { to: '/perfumes', label: t('nav.perfumes') },
+                { to: '/favoritos', label: t('nav.wishlist') },
+                { to: '/sacola', label: t('nav.cart') },
+              ]}
+            />
+            <FooterColumn
+              title={t('footer.help')}
+              links={[
+                { to: '/atendimento', label: t('nav.contact') },
+                { to: '/trocas', label: t('legal.exchanges') },
+                { to: '/termos', label: t('legal.terms') },
+                { to: '/conta', label: t('nav.account') },
+              ]}
+            />
+            <FooterColumn
+              title={t('footer.company')}
+              links={[
+                { to: '/sobre', label: t('footer.about') },
+                { to: '/privacidade', label: t('legal.privacy') },
+              ]}
+            >
               {store && (
                 <address className="mt-4 text-[11px] not-italic leading-relaxed text-muted">
                   {store.legalName}
@@ -33,7 +55,8 @@ export function Footer() {
                   {store.address.street}, {store.address.number}
                   {store.address.complement ? ` – ${store.address.complement}` : ''}
                   <br />
-                  {store.address.district} · {store.address.city}/{store.address.state} · CEP {store.address.cep}
+                  {store.address.district} · {store.address.city}/{store.address.state} · CEP{' '}
+                  {store.address.cep}
                   <br />
                   {store.email} · {formatPhoneBR(store.phone)}
                 </address>
@@ -57,7 +80,15 @@ export function Footer() {
   );
 }
 
-function FooterColumn({ title, links, children }: { title: string; links: Array<{ to: string; label: string }>; children?: React.ReactNode }) {
+function FooterColumn({
+  title,
+  links,
+  children,
+}: {
+  title: string;
+  links: Array<{ to: string; label: string }>;
+  children?: React.ReactNode;
+}) {
   return (
     <div>
       <h4 className="mb-4 text-[11px] font-bold uppercase tracking-[0.2em] text-gold">{title}</h4>

@@ -63,7 +63,9 @@ export default function WishlistPage() {
       {missing.length > 0 && (
         <Alert tone="warning" className="mb-6">
           <p>
-            {missing.length === 1 ? 'Uma peça salva não está mais disponível na curadoria.' : `${missing.length} peças salvas não estão mais disponíveis na curadoria.`}
+            {missing.length === 1
+              ? 'Uma peça salva não está mais disponível na curadoria.'
+              : `${missing.length} peças salvas não estão mais disponíveis na curadoria.`}
           </p>
           <ul className="mt-2 flex flex-wrap gap-2">
             {missing.map((slug) => (
@@ -74,7 +76,8 @@ export default function WishlistPage() {
                   className="inline-flex items-center gap-1.5 rounded-sm border border-line-strong px-2.5 py-1 text-[11px] uppercase tracking-[0.15em] text-ivory/80 hover:border-gold hover:text-gold"
                 >
                   <X className="h-3 w-3" aria-hidden="true" />
-                  {t('common.remove')} <span className="normal-case tracking-normal text-muted">({slug})</span>
+                  {t('common.remove')}{' '}
+                  <span className="normal-case tracking-normal text-muted">({slug})</span>
                 </button>
               </li>
             ))}
@@ -84,7 +87,10 @@ export default function WishlistPage() {
 
       {failed.length > 0 && (
         <div className="mb-6">
-          <ErrorState message={failed[0]?.error?.message ?? t('common.error')} onRetry={() => failed.forEach((r) => r.refetch())} />
+          <ErrorState
+            message={failed[0]?.error?.message ?? t('common.error')}
+            onRetry={() => failed.forEach((r) => r.refetch())}
+          />
         </div>
       )}
 
@@ -109,7 +115,9 @@ function PageHeader({ count }: { count: number }) {
       <span className="eyebrow">{t('nav.account')}</span>
       <h1 className="heading mt-2 text-3xl md:text-4xl">{t('nav.wishlist')}</h1>
       <p className="mt-2 text-sm text-muted">
-        {count === 0 ? 'Nenhuma peça salva.' : `${count} ${pluralize(count, 'peça salva', 'peças salvas')} neste navegador.`}
+        {count === 0
+          ? 'Nenhuma peça salva.'
+          : `${count} ${pluralize(count, 'peça salva', 'peças salvas')} neste navegador.`}
       </p>
     </header>
   );

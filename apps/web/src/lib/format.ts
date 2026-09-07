@@ -1,8 +1,18 @@
 export { formatBRL, formatCEP, formatCPF, formatPhoneBR, formatCNPJ } from '@vellor/shared';
 
-const dateTimeFormatter = new Intl.DateTimeFormat('pt-BR', { dateStyle: 'short', timeStyle: 'short', timeZone: 'America/Sao_Paulo' });
-const dateFormatter = new Intl.DateTimeFormat('pt-BR', { dateStyle: 'long', timeZone: 'America/Sao_Paulo' });
-const shortDateFormatter = new Intl.DateTimeFormat('pt-BR', { dateStyle: 'short', timeZone: 'America/Sao_Paulo' });
+const dateTimeFormatter = new Intl.DateTimeFormat('pt-BR', {
+  dateStyle: 'short',
+  timeStyle: 'short',
+  timeZone: 'America/Sao_Paulo',
+});
+const dateFormatter = new Intl.DateTimeFormat('pt-BR', {
+  dateStyle: 'long',
+  timeZone: 'America/Sao_Paulo',
+});
+const shortDateFormatter = new Intl.DateTimeFormat('pt-BR', {
+  dateStyle: 'short',
+  timeZone: 'America/Sao_Paulo',
+});
 
 export function formatDateTime(value: string | Date | null | undefined): string {
   if (!value) return '—';
@@ -16,7 +26,10 @@ export function formatDate(value: string | Date | null | undefined): string {
 
 export function formatShortDate(value: string | Date | null | undefined): string {
   if (!value) return '—';
-  const date = typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value) ? new Date(`${value}T12:00:00-03:00`) : new Date(value);
+  const date =
+    typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value)
+      ? new Date(`${value}T12:00:00-03:00`)
+      : new Date(value);
   return shortDateFormatter.format(date);
 }
 
@@ -45,7 +58,10 @@ export function maskPhoneInput(value: string): string {
 /** Entrada de moeda: "1.234,56" <-> centavos. */
 export function centsToInput(cents: number | null | undefined): string {
   if (cents === null || cents === undefined) return '';
-  return (cents / 100).toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  return (cents / 100)
+    .toFixed(2)
+    .replace('.', ',')
+    .replace(/\B(?=(\d{3})+(?!\d))/g, '.');
 }
 
 export function inputToCents(value: string): number | null {

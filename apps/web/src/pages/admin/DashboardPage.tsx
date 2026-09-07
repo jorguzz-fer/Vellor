@@ -1,5 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
-import { type DashboardStats, ORDER_STATUS_LABELS, ORDER_STATUSES, type OrderStatus } from '@vellor/shared';
+import {
+  type DashboardStats,
+  ORDER_STATUS_LABELS,
+  ORDER_STATUSES,
+  type OrderStatus,
+} from '@vellor/shared';
 import { ArrowRight, Mail, MessageSquare, PackageOpen, RefreshCw } from 'lucide-react';
 import { type ComponentProps, useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router';
@@ -22,8 +27,14 @@ const STATUS_TONE: Record<OrderStatus, Tone> = {
   refunded: 'danger',
 };
 
-const timeFormatter = new Intl.DateTimeFormat('pt-BR', { timeStyle: 'short', timeZone: 'America/Sao_Paulo' });
-const compactFormatter = new Intl.NumberFormat('pt-BR', { notation: 'compact', maximumFractionDigits: 1 });
+const timeFormatter = new Intl.DateTimeFormat('pt-BR', {
+  timeStyle: 'short',
+  timeZone: 'America/Sao_Paulo',
+});
+const compactFormatter = new Intl.NumberFormat('pt-BR', {
+  notation: 'compact',
+  maximumFractionDigits: 1,
+});
 
 /** "R$ 12,3 mil" para eixos e resumos compactos. */
 function compactBRL(cents: number): string {
@@ -37,11 +48,20 @@ function shortDay(isoDate: string): string {
 
 export default function DashboardPage() {
   usePageMeta(`${t('admin.dashboard')} · ${t('admin.title')}`);
-  const query = useQuery({ queryKey: ['admin', 'dashboard'], queryFn: adminApi.dashboard, refetchInterval: 60_000 });
+  const query = useQuery({
+    queryKey: ['admin', 'dashboard'],
+    queryFn: adminApi.dashboard,
+    refetchInterval: 60_000,
+  });
 
   if (query.isPending) return <PageLoader />;
   if (query.isError) {
-    return <ErrorState message={query.error instanceof ApiError ? query.error.message : undefined} onRetry={() => query.refetch()} />;
+    return (
+      <ErrorState
+        message={query.error instanceof ApiError ? query.error.message : undefined}
+        onRetry={() => query.refetch()}
+      />
+    );
   }
 
   const stats = query.data;
@@ -51,27 +71,62 @@ export default function DashboardPage() {
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <h1 className="heading text-2xl">{t('admin.dashboard')}</h1>
-          <p className="mt-1 text-xs text-muted">Atualizado às {timeFormatter.format(new Date(query.dataUpdatedAt))} · atualização automática a cada minuto</p>
+          <p className="mt-1 text-xs text-muted">
+            Atualizado às {timeFormatter.format(new Date(query.dataUpdatedAt))} · atualização
+            automática a cada minuto
+          </p>
         </div>
-        <Button variant="secondary" size="sm" icon={<RefreshCw className="h-3.5 w-3.5" />} loading={query.isFetching} onClick={() => query.refetch()}>
+        <Button
+          variant="secondary"
+          size="sm"
+          icon={<RefreshCw className="h-3.5 w-3.5" />}
+          loading={query.isFetching}
+          onClick={() => query.refetch()}
+        >
           Atualizar
         </Button>
       </div>
 
       <section aria-label="Indicadores" className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-        <Kpi label="Receita hoje" value={formatBRL(stats.revenueTodayCents)} hint={`${stats.ordersToday} ${pluralize(stats.ordersToday, 'pedido criado', 'pedidos criados')} hoje`} />
-        <Kpi label="Receita 7 dias" value={formatBRL(stats.revenue7dCents)} hint="Pedidos pagos nos últimos 7 dias" />
-        <Kpi label="Receita 30 dias" value={formatBRL(stats.revenue30dCents)} hint="Pedidos pagos nos últimos 30 dias" />
-        <Kpi label="Pedidos hoje" value={String(stats.ordersToday)} hint="Criados desde a meia-noite" />
-        <Kpi label="Pedidos 30 dias" value={String(stats.orders30d)} hint="Criados nos últimos 30 dias" />
-        <Kpi label="Ticket médio (30 dias)" value={formatBRL(stats.averageTicket30dCents)} hint="Média dos pedidos pagos" />
+        <Kpi
+          label="Receita hoje"
+          value={formatBRL(stats.revenueTodayCents)}
+          hint={`${stats.ordersToday} ${pluralize(stats.ordersToday, 'pedido criado', 'pedidos criados')} hoje`}
+        />
+        <Kpi
+          label="Receita 7 dias"
+          value={formatBRL(stats.revenue7dCents)}
+          hint="Pedidos pagos nos últimos 7 dias"
+        />
+        <Kpi
+          label="Receita 30 dias"
+          value={formatBRL(stats.revenue30dCents)}
+          hint="Pedidos pagos nos últimos 30 dias"
+        />
+        <Kpi
+          label="Pedidos hoje"
+          value={String(stats.ordersToday)}
+          hint="Criados desde a meia-noite"
+        />
+        <Kpi
+          label="Pedidos 30 dias"
+          value={String(stats.orders30d)}
+          hint="Criados nos últimos 30 dias"
+        />
+        <Kpi
+          label="Ticket médio (30 dias)"
+          value={formatBRL(stats.averageTicket30dCents)}
+          hint="Média dos pedidos pagos"
+        />
       </section>
 
       <div className="grid gap-6 xl:grid-cols-3">
-        <section className="card p-5 xl:col-span-2" aria-label="Vendas por dia">
+        <section className="card p-5 xl:col-span-2 xl:self-start" aria-label="Vendas por dia">
           <div className="mb-4 flex flex-wrap items-baseline justify-between gap-2">
             <h2 className="heading text-lg">Vendas por dia</h2>
-            <span className="text-xs text-muted">Receita paga nos últimos {stats.salesByDay.length} dias</span>
+            <span className="text-xs text-muted">
+              Receita paga nos últimos {stats.salesByDay.length} dias
+            </span>
           </div>
           <SalesChart data={stats.salesByDay} />
         </section>
@@ -82,10 +137,16 @@ export default function DashboardPage() {
             <ul className="flex flex-wrap gap-2">
               {ORDER_STATUSES.map((status) => (
                 <li key={status}>
-                  <Link to={`/admin/pedidos?status=${status}`} className="inline-block rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold" title={`Ver pedidos: ${ORDER_STATUS_LABELS[status]}`}>
+                  <Link
+                    to={`/admin/pedidos?status=${status}`}
+                    className="inline-block rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold"
+                    title={`Ver pedidos: ${ORDER_STATUS_LABELS[status]}`}
+                  >
                     <Badge tone={STATUS_TONE[status]}>
                       {ORDER_STATUS_LABELS[status]}
-                      <span className="ml-1 rounded-sm bg-noir/60 px-1.5 py-px text-[10px] text-cream">{stats.ordersByStatus[status] ?? 0}</span>
+                      <span className="ml-1 rounded-sm bg-noir/60 px-1.5 py-px text-[10px] text-cream">
+                        {stats.ordersByStatus[status] ?? 0}
+                      </span>
                     </Badge>
                   </Link>
                 </li>
@@ -93,26 +154,49 @@ export default function DashboardPage() {
             </ul>
           </section>
 
-          <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-1" aria-label="Atendimento e newsletter">
-            <Link to="/admin/atendimento?status=new" className="card group flex items-center gap-4 p-5 transition-colors hover:border-gold/60">
-              <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-sm border ${stats.pendingContacts > 0 ? 'border-warning/40 bg-warning/10 text-warning' : 'border-line-strong bg-spruce text-muted'}`}>
+          <section
+            className="grid gap-4 sm:grid-cols-2 xl:grid-cols-1"
+            aria-label="Atendimento e newsletter"
+          >
+            <Link
+              to="/admin/atendimento?status=new"
+              className="card group flex items-center gap-4 p-5 transition-colors hover:border-gold/60"
+            >
+              <span
+                className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-sm border ${stats.pendingContacts > 0 ? 'border-warning/40 bg-warning/10 text-warning' : 'border-line-strong bg-spruce text-muted'}`}
+              >
                 <MessageSquare className="h-4 w-4" />
               </span>
               <span className="min-w-0 flex-1">
-                <span className="block text-[10px] font-semibold uppercase tracking-[0.2em] text-muted">Atendimento pendente</span>
-                <span className="block font-display text-2xl text-cream">{stats.pendingContacts}</span>
-                <span className="block text-xs text-muted">{pluralize(stats.pendingContacts, 'mensagem nova', 'mensagens novas')}</span>
+                <span className="block text-[10px] font-semibold uppercase tracking-[0.2em] text-muted">
+                  Atendimento pendente
+                </span>
+                <span className="block font-display text-2xl text-cream">
+                  {stats.pendingContacts}
+                </span>
+                <span className="block text-xs text-muted">
+                  {pluralize(stats.pendingContacts, 'mensagem nova', 'mensagens novas')}
+                </span>
               </span>
               <ArrowRight className="h-4 w-4 text-muted transition-colors group-hover:text-gold" />
             </Link>
-            <Link to="/admin/newsletter" className="card group flex items-center gap-4 p-5 transition-colors hover:border-gold/60">
+            <Link
+              to="/admin/newsletter"
+              className="card group flex items-center gap-4 p-5 transition-colors hover:border-gold/60"
+            >
               <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-sm border border-gold/40 bg-gold/10 text-gold">
                 <Mail className="h-4 w-4" />
               </span>
               <span className="min-w-0 flex-1">
-                <span className="block text-[10px] font-semibold uppercase tracking-[0.2em] text-muted">Newsletter</span>
-                <span className="block font-display text-2xl text-cream">{stats.newsletterSubscribers}</span>
-                <span className="block text-xs text-muted">{pluralize(stats.newsletterSubscribers, 'inscrito ativo', 'inscritos ativos')}</span>
+                <span className="block text-[10px] font-semibold uppercase tracking-[0.2em] text-muted">
+                  Newsletter
+                </span>
+                <span className="block font-display text-2xl text-cream">
+                  {stats.newsletterSubscribers}
+                </span>
+                <span className="block text-xs text-muted">
+                  {pluralize(stats.newsletterSubscribers, 'inscrito ativo', 'inscritos ativos')}
+                </span>
               </span>
               <ArrowRight className="h-4 w-4 text-muted transition-colors group-hover:text-gold" />
             </Link>
@@ -160,7 +244,8 @@ function niceCeil(value: number): number {
   if (value <= 0) return 0;
   const power = 10 ** Math.floor(Math.log10(value));
   const mantissa = value / power;
-  const nice = mantissa <= 1 ? 1 : mantissa <= 2 ? 2 : mantissa <= 2.5 ? 2.5 : mantissa <= 5 ? 5 : 10;
+  const nice =
+    mantissa <= 1 ? 1 : mantissa <= 2 ? 2 : mantissa <= 2.5 ? 2.5 : mantissa <= 5 ? 5 : 10;
   return nice * power;
 }
 
@@ -178,19 +263,40 @@ function SalesChart({ data }: { data: DashboardStats['salesByDay'] }) {
   const ticks = [0, 0.25, 0.5, 0.75, 1];
   const totalRevenue = data.reduce((sum, d) => sum + d.revenueCents, 0);
   const totalOrders = data.reduce((sum, d) => sum + d.orders, 0);
-  const description = data.map((d) => `${shortDay(d.date)}: ${formatBRL(d.revenueCents)}`).join('; ');
+  const description = data
+    .map((d) => `${shortDay(d.date)}: ${formatBRL(d.revenueCents)}`)
+    .join('; ');
 
   return (
     <div>
       <div ref={ref} className="relative w-full">
         {width > 0 && (
-          <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} role="img" aria-label={`Receita por dia. ${description}`} className="block">
+          <svg
+            width={width}
+            height={height}
+            viewBox={`0 0 ${width} ${height}`}
+            role="img"
+            aria-label={`Receita por dia. ${description}`}
+            className="block"
+          >
             {ticks.map((fraction) => {
               const y = pad.top + innerH - fraction * innerH;
               return (
                 <g key={fraction}>
-                  <line x1={pad.left} x2={width - pad.right} y1={y} y2={y} className={fraction === 0 ? 'stroke-line-strong' : 'stroke-line'} strokeWidth={1} />
-                  <text x={pad.left - 8} y={y + 3} textAnchor="end" className="fill-muted text-[10px]">
+                  <line
+                    x1={pad.left}
+                    x2={width - pad.right}
+                    y1={y}
+                    y2={y}
+                    className={fraction === 0 ? 'stroke-line-strong' : 'stroke-line'}
+                    strokeWidth={1}
+                  />
+                  <text
+                    x={pad.left - 8}
+                    y={y + 3}
+                    textAnchor="end"
+                    className="fill-muted text-[10px]"
+                  >
                     {compactBRL(fraction * axisMax)}
                   </text>
                 </g>
@@ -205,12 +311,30 @@ function SalesChart({ data }: { data: DashboardStats['salesByDay'] }) {
                 <g key={d.date}>
                   <title>{`${shortDay(d.date)}: ${formatBRL(d.revenueCents)} · ${d.orders} ${pluralize(d.orders, 'pedido', 'pedidos')}`}</title>
                   {d.revenueCents > 0 ? (
-                    <rect x={x} y={y} width={barW} height={h} rx={1} className="fill-gold transition-colors hover:fill-gold-light" />
+                    <rect
+                      x={x}
+                      y={y}
+                      width={barW}
+                      height={h}
+                      rx={1}
+                      className="fill-gold transition-colors hover:fill-gold-light"
+                    />
                   ) : (
-                    <rect x={x} y={pad.top + innerH - 2} width={barW} height={2} className="fill-line-strong" />
+                    <rect
+                      x={x}
+                      y={pad.top + innerH - 2}
+                      width={barW}
+                      height={2}
+                      className="fill-line-strong"
+                    />
                   )}
                   {showLabel && (
-                    <text x={x + barW / 2} y={height - 10} textAnchor="middle" className="fill-muted text-[10px]">
+                    <text
+                      x={x + barW / 2}
+                      y={height - 10}
+                      textAnchor="middle"
+                      className="fill-muted text-[10px]"
+                    >
                       {shortDay(d.date)}
                     </text>
                   )}
@@ -220,11 +344,14 @@ function SalesChart({ data }: { data: DashboardStats['salesByDay'] }) {
           </svg>
         )}
         {totalRevenue === 0 && (
-          <p className="pointer-events-none absolute inset-x-0 top-1/2 -translate-y-1/2 text-center text-xs text-muted">Sem vendas pagas no período.</p>
+          <p className="pointer-events-none absolute inset-x-0 top-1/2 -translate-y-1/2 text-center text-xs text-muted">
+            Sem vendas pagas no período.
+          </p>
         )}
       </div>
       <p className="mt-3 text-xs text-muted">
-        <span className="text-cream">{formatBRL(totalRevenue)}</span> em {totalOrders} {pluralize(totalOrders, 'pedido pago', 'pedidos pagos')} no período
+        <span className="text-cream">{formatBRL(totalRevenue)}</span> em {totalOrders}{' '}
+        {pluralize(totalOrders, 'pedido pago', 'pedidos pagos')} no período
       </p>
     </div>
   );
@@ -267,19 +394,30 @@ function RecentOrders({ orders }: { orders: DashboardStats['recentOrders'] }) {
                   }}
                 >
                   <td>
-                    <Link to={`/admin/pedidos/${order.id}`} className="font-medium text-gold hover:underline">
+                    <Link
+                      to={`/admin/pedidos/${order.id}`}
+                      className="font-medium text-gold hover:underline"
+                    >
                       {order.number}
                     </Link>
                   </td>
                   <td>
                     <span className="block max-w-[180px] truncate">{order.customerName}</span>
-                    <span className="block max-w-[180px] truncate text-xs text-muted">{order.customerEmail}</span>
+                    <span className="block max-w-[180px] truncate text-xs text-muted">
+                      {order.customerEmail}
+                    </span>
                   </td>
-                  <td className="whitespace-nowrap text-right font-medium">{formatBRL(order.totalCents)}</td>
+                  <td className="whitespace-nowrap text-right font-medium">
+                    {formatBRL(order.totalCents)}
+                  </td>
                   <td>
-                    <Badge tone={STATUS_TONE[order.status]}>{ORDER_STATUS_LABELS[order.status]}</Badge>
+                    <Badge tone={STATUS_TONE[order.status]}>
+                      {ORDER_STATUS_LABELS[order.status]}
+                    </Badge>
                   </td>
-                  <td className="whitespace-nowrap text-xs text-muted">{formatDateTime(order.createdAt)}</td>
+                  <td className="whitespace-nowrap text-xs text-muted">
+                    {formatDateTime(order.createdAt)}
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -319,14 +457,21 @@ function LowStock({ items }: { items: DashboardStats['lowStock'] }) {
               {items.map((item) => (
                 <tr key={`${item.productId}-${item.sku}`}>
                   <td>
-                    <Link to={`/admin/produtos/${item.productId}`} className="font-medium text-gold hover:underline">
+                    <Link
+                      to={`/admin/produtos/${item.productId}`}
+                      className="font-medium text-gold hover:underline"
+                    >
                       {item.productName}
                     </Link>
                   </td>
                   <td className="text-ivory/80">{item.variantName}</td>
                   <td className="font-mono text-xs text-muted">{item.sku}</td>
                   <td className="text-right">
-                    <Badge tone={item.stockQuantity <= 0 ? 'danger' : 'warning'}>{item.stockQuantity <= 0 ? t('common.outOfStock') : `${item.stockQuantity} un.`}</Badge>
+                    <Badge tone={item.stockQuantity <= 0 ? 'danger' : 'warning'}>
+                      {item.stockQuantity <= 0
+                        ? t('common.outOfStock')
+                        : `${item.stockQuantity} un.`}
+                    </Badge>
                   </td>
                 </tr>
               ))}

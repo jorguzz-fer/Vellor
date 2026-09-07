@@ -1,7 +1,9 @@
 import { expect, test } from '@playwright/test';
 
 test.describe('loja', () => {
-  test('navega, adiciona à sacola, finaliza compra com Pix simulado e vê o pagamento confirmado', async ({ page }) => {
+  test('navega, adiciona à sacola, finaliza compra com Pix simulado e vê o pagamento confirmado', async ({
+    page,
+  }) => {
     await page.goto('/');
     await expect(page).toHaveTitle(/Vellor/);
 

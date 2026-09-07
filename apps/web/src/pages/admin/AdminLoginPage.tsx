@@ -29,7 +29,11 @@ export default function AdminLoginPage() {
   const mfaIncomplete = auth.mfaSetupRequired || auth.mfaPending;
   if (auth.authenticated && auth.isAdmin) {
     // Sessão de admin já existente: segue direto para o painel (ou para concluir o MFA).
-    return mfaIncomplete ? <Navigate to="/admin/mfa" replace state={{ from }} /> : <Navigate to={from ?? '/admin'} replace />;
+    return mfaIncomplete ? (
+      <Navigate to="/admin/mfa" replace state={{ from }} />
+    ) : (
+      <Navigate to={from ?? '/admin'} replace />
+    );
   }
 
   const value = (name: string) => (form.values[name] as string | undefined) ?? '';
@@ -91,13 +95,21 @@ export default function AdminLoginPage() {
               error={form.errors.password}
               data-testid="admin-login-password"
             />
-            <Button type="submit" full loading={form.submitting || logout.isPending} data-testid="admin-login-submit">
+            <Button
+              type="submit"
+              full
+              loading={form.submitting || logout.isPending}
+              data-testid="admin-login-submit"
+            >
               {t('account.login')}
             </Button>
           </form>
         </div>
         <p className="mt-6 text-center">
-          <Link to="/" className="text-[11px] uppercase tracking-[0.2em] text-muted transition-colors hover:text-gold">
+          <Link
+            to="/"
+            className="text-[11px] uppercase tracking-[0.2em] text-muted transition-colors hover:text-gold"
+          >
             {t('common.backHome')}
           </Link>
         </p>
