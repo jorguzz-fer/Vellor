@@ -186,7 +186,7 @@ export class CheckoutService {
   async placeOrder(
     input: CheckoutInput,
     auth: AuthContext | undefined,
-    meta: { ip?: string | null },
+    _meta: { ip?: string | null },
   ): Promise<CheckoutResult> {
     const { quoted, entries, missing } = await this.resolveItems(input.items);
     if (missing.length || !quoted.length) {

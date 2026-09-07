@@ -201,14 +201,12 @@ export async function seed(db: Database, options: SeedOptions = {}): Promise<voi
         })
         .returning({ id: productVariants.id });
       if (variant.stockQuantity > 0) {
-        await db
-          .insert(inventoryMovements)
-          .values({
-            variantId: v!.id,
-            delta: variant.stockQuantity,
-            reason: 'Estoque inicial (seed)',
-            referenceType: 'seed',
-          });
+        await db.insert(inventoryMovements).values({
+          variantId: v!.id,
+          delta: variant.stockQuantity,
+          reason: 'Estoque inicial (seed)',
+          referenceType: 'seed',
+        });
       }
     }
     created++;
