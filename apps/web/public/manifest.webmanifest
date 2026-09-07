@@ -1,0 +1,11 @@
+{
+  "name": "Vellor — Relógios de Luxo e Perfumes de Nicho",
+  "short_name": "Vellor",
+  "description": "Relógios de luxo e perfumes de nicho com autenticidade garantida e envio segurado para todo o Brasil.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#101f20",
+  "theme_color": "#101f20",
+  "lang": "pt-BR",
+  "icons": [{ "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
+}

@@ -1,0 +1,170 @@
+@import 'tailwindcss';
+
+/* ------------------------------------------------------------------
+ * Tokens de design da Vellor. Todo o app (loja e admin) usa estas
+ * variáveis; nenhuma cor deve ser escrita "na mão" nos componentes.
+ * ------------------------------------------------------------------ */
+@theme {
+  --font-serif: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+  --font-sans: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+  --color-noir: #0b1717;
+  --color-deep: #101f20;
+  --color-dark: #132524;
+  --color-spruce: #182e2c;
+  --color-line: #1c3836;
+  --color-line-strong: #2d524e;
+  --color-gold: #c8a25c;
+  --color-gold-light: #dfbe7d;
+  --color-gold-dark: #a98342;
+  --color-ivory: #ede7dc;
+  --color-cream: #f4efe6;
+  --color-muted: #8fa19f;
+  --color-success: #6fcf97;
+  --color-danger: #e06c75;
+  --color-warning: #e5b567;
+  --color-info: #7cc4e0;
+
+  --radius-sm: 2px;
+  --radius-md: 4px;
+}
+
+@layer base {
+  html {
+    color-scheme: dark;
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-deep text-cream font-sans antialiased;
+    font-feature-settings: 'kern', 'liga';
+  }
+  ::selection {
+    @apply bg-gold text-noir;
+  }
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--color-noir);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-line-strong);
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-gold);
+  }
+  input[type='number']::-webkit-inner-spin-button,
+  input[type='number']::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-gold);
+    outline-offset: 2px;
+  }
+}
+
+@utility btn {
+  @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-sm px-5 py-3 font-sans text-[11px] font-bold uppercase tracking-[0.2em] transition-colors disabled:cursor-not-allowed disabled:opacity-50;
+}
+
+@layer components {
+  .font-display {
+    font-family: var(--font-serif);
+  }
+  .eyebrow {
+    @apply font-sans text-[10px] font-semibold uppercase tracking-[0.3em] text-gold;
+  }
+  .heading {
+    font-family: var(--font-serif);
+    @apply font-normal uppercase tracking-[0.08em] text-cream;
+  }
+  .btn-primary {
+    @apply btn bg-gold text-noir hover:bg-gold-light;
+  }
+  .btn-secondary {
+    @apply btn border border-line-strong bg-transparent text-cream hover:bg-spruce;
+  }
+  .btn-ghost {
+    @apply btn text-ivory/80 hover:text-gold;
+  }
+  .btn-danger {
+    @apply btn border border-danger/50 text-danger hover:bg-danger/10;
+  }
+  .input {
+    @apply w-full rounded-sm border border-line-strong bg-dark px-3 py-2.5 text-sm text-cream placeholder:text-muted/70 focus:border-gold focus:outline-none disabled:opacity-60;
+  }
+  .label {
+    @apply mb-1.5 block font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-muted;
+  }
+  .card {
+    @apply rounded-sm border border-line bg-dark;
+  }
+  .link {
+    @apply text-gold underline-offset-4 hover:underline;
+  }
+  .table {
+    @apply w-full border-collapse text-left text-sm;
+  }
+  .table th {
+    @apply border-b border-line px-3 py-2.5 font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-muted;
+  }
+  .table td {
+    @apply border-b border-line/70 px-3 py-3 align-middle;
+  }
+  .table tbody tr:hover {
+    @apply bg-spruce/40;
+  }
+  .divider {
+    @apply border-t border-line;
+  }
+}
+
+@layer utilities {
+  .scrollbar-none {
+    scrollbar-width: none;
+  }
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+  .animate-fade-in {
+    animation: fade-in 0.2s ease-out;
+  }
+  .animate-slide-in-right {
+    animation: slide-in-right 0.25s ease-out;
+  }
+  .animate-slide-up {
+    animation: slide-up 0.25s ease-out;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes slide-in-right {
+  from {
+    transform: translateX(24px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+@keyframes slide-up {
+  from {
+    transform: translateY(12px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
