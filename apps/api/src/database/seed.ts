@@ -35,7 +35,12 @@ export interface SeedOptions {
   log?: (message: string) => void;
 }
 
-export async function seed(db: Database, options: SeedOptions = {}): Promise<void> {
+/**
+ * Garante o mínimo para a loja operar: configurações padrão e o primeiro administrador.
+ * Idempotente. Roda no seed e também na inicialização da API (RUN_MIGRATIONS=true), o que
+ * dispensa comandos manuais em deploys gerenciados (Docker Compose, Coolify).
+ */
+export async function ensureBaseline(db: Database, options: SeedOptions = {}): Promise<void> {
   const log = options.log ?? (() => undefined);
 
   // ---------- Configurações ----------
@@ -47,8 +52,6 @@ export async function seed(db: Database, options: SeedOptions = {}): Promise<voi
 
   // ---------- Administrador ----------
   if (options.adminEmail && options.adminPassword) {
-    const passwords = new PasswordService();
-    const passwordHash = await passwords.hash(options.adminPassword);
     const email = options.adminEmail.toLowerCase();
     const existing = await db.query.users.findFirst({ where: eq(users.email, email) });
     const mfa =
@@ -61,6 +64,7 @@ export async function seed(db: Database, options: SeedOptions = {}): Promise<voi
           }
         : {};
     if (!existing) {
+      const passwordHash = await new PasswordService().hash(options.adminPassword);
       await db.insert(users).values({
         email,
         name: options.adminName ?? 'Administrador',
@@ -88,6 +92,22 @@ export async function seed(db: Database, options: SeedOptions = {}): Promise<voi
       log(`Administrador ${email} já existe.`);
     }
   }
+}
+
+/** Baseline mais o catálogo de demonstração (placeholders) e o cupom de exemplo. */
+export async function seed(db: Database, options: SeedOptions = {}): Promise<void> {
+  const log = options.log ?? (() => undefined);
+  await ensureBaseline(db, options);
+
+  if (options.removePlaceholders) {
+    const removed = await db
+      .delete(products)
+      .where(sql`${products.attributes} ->> '_placeholder' = 'sim'`)
+      .returning({ id: products.id });
+    log(`${removed.length} produto(s) de demonstração removido(s).`);
+    return;
+  }
+  if (options.skipCatalog) return;
 
   // ---------- Cupom de exemplo ----------
   await db
@@ -101,16 +121,6 @@ export async function seed(db: Database, options: SeedOptions = {}): Promise<voi
       isActive: true,
     })
     .onConflictDoNothing();
-
-  if (options.removePlaceholders) {
-    const removed = await db
-      .delete(products)
-      .where(sql`${products.attributes} ->> '_placeholder' = 'sim'`)
-      .returning({ id: products.id });
-    log(`${removed.length} produto(s) de demonstração removido(s).`);
-    return;
-  }
-  if (options.skipCatalog) return;
 
   // ---------- Categorias e coleções ----------
   const categoryIds = new Map<string, string>();
@@ -229,7 +239,10 @@ async function main(): Promise<void> {
     await runMigrations(db);
     await seed(db, {
       removePlaceholders: args.has('--remove-placeholders'),
-      skipCatalog: args.has('--skip-catalog') || env.NODE_ENV === 'production',
+      // Em produção o catálogo de demonstração só entra com --with-catalog explícito.
+      skipCatalog:
+        args.has('--skip-catalog') ||
+        (env.NODE_ENV === 'production' && !args.has('--with-catalog')),
       adminEmail,
       adminPassword,
       adminName: env.ADMIN_NAME,

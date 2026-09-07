@@ -97,14 +97,19 @@ configurações da loja (identidade, frete, parcelamento, textos legais) e audit
 
 ## Deploy
 
-Veja [docs/runbook-deploy.md](docs/runbook-deploy.md). Resumo: VPS com Docker,
-`.env` preenchido, `docker compose --env-file .env -f infra/docker-compose.prod.yml up -d --build`,
-depois `docker compose ... exec api node dist/database/seed.js --skip-catalog` para
-criar o administrador.
+- **Coolify** (recomendado): [docs/runbook-coolify.md](docs/runbook-coolify.md). Build pack
+  Docker Compose apontando para `docker-compose.coolify.yml`, domínio no serviço `web`,
+  variáveis na interface e deploy a cada push na `main`.
+- **VPS com Docker Compose**: [docs/runbook-deploy.md](docs/runbook-deploy.md). Resumo: `.env`
+  preenchido e `docker compose --env-file .env -f infra/docker-compose.prod.yml up -d --build`.
+
+Nos dois casos a API aplica as migrations e cria o primeiro administrador
+(`ADMIN_EMAIL`/`ADMIN_PASSWORD`) ao iniciar; não há comando manual.
 
 ## Documentação
 
 - [ADRs](docs/adr/) — decisões de arquitetura (stack, pagamentos, frete, auth, outbox, storage)
-- [Runbook de deploy, backup e rollback](docs/runbook-deploy.md)
+- [Deploy com Coolify](docs/runbook-coolify.md)
+- [Runbook de deploy manual, backup e rollback](docs/runbook-deploy.md)
 - [Guia do catálogo](docs/catalogo.md) — o que enviar (fotos, fichas técnicas) e como cadastrar
 - [Segurança e LGPD](docs/seguranca-e-lgpd.md) — checklist antes do go-live

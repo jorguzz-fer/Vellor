@@ -11,6 +11,7 @@ import { AppModule } from './app.module';
 import { AppConfig } from './config/app-config';
 import { DatabaseService } from './database/database.module';
 import { runMigrations } from './database/migrate';
+import { ensureBaseline } from './database/seed';
 import { MetricsService } from './health/metrics.service';
 import { SessionMiddleware } from './modules/auth/session.middleware';
 import { setupOpenApi } from './openapi';
@@ -77,7 +78,15 @@ async function bootstrap(): Promise<void> {
 
   if (config.env.RUN_MIGRATIONS) {
     logger.log('Aplicando migrations pendentes...');
-    await runMigrations(app.get(DatabaseService).db);
+    const db = app.get(DatabaseService).db;
+    await runMigrations(db);
+    // Deploys gerenciados: configurações padrão e primeiro admin sem comando manual.
+    await ensureBaseline(db, {
+      adminEmail: config.env.ADMIN_EMAIL,
+      adminPassword: config.env.ADMIN_PASSWORD,
+      adminName: config.env.ADMIN_NAME,
+      log: (message) => logger.log(message),
+    });
   }
 
   await app.listen(config.env.PORT);

@@ -122,7 +122,11 @@ export function loadEnv(overrides: Partial<NodeJS.ProcessEnv> = {}): Env {
   for (const file of candidates) {
     dotenv.config({ path: file, override: false, quiet: true } as dotenv.DotenvConfigOptions);
   }
-  const raw = { ...process.env, ...overrides };
+  // Painéis como o Coolify gravam variáveis opcionais como texto vazio: '' conta como ausente,
+  // senão validações de URL, e-mail e tamanho mínimo falhariam na inicialização.
+  const raw = Object.fromEntries(
+    Object.entries({ ...process.env, ...overrides }).filter(([, value]) => value !== ''),
+  );
   const parsed = EnvSchema.safeParse(raw);
   if (!parsed.success) {
     const problems = parsed.error.issues

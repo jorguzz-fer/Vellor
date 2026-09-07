@@ -1,5 +1,8 @@
 # Runbook — deploy, operação, backup e rollback
 
+> Vai usar **Coolify**? Siga o [runbook-coolify.md](runbook-coolify.md). Este documento cobre o
+> deploy manual com Docker Compose em um VPS.
+
 ## 1. Servidor
 
 - VPS Linux (Ubuntu 24.04 LTS recomendado), 2 vCPU / 4 GB é suficiente para começar.
@@ -35,9 +38,13 @@ Preencha no `.env` (mínimo para produção):
 ```bash
 docker compose --env-file .env -f infra/docker-compose.prod.yml up -d --build
 docker compose --env-file .env -f infra/docker-compose.prod.yml logs -f api   # aguarde "ouvindo na porta"
-# primeiro administrador (migrations já rodaram no boot da API)
-docker compose --env-file .env -f infra/docker-compose.prod.yml exec api node dist/database/seed.js --skip-catalog
 ```
+
+Na inicialização (`RUN_MIGRATIONS=true`) a API aplica as migrations, grava as configurações
+padrão e cria o administrador de `ADMIN_EMAIL`/`ADMIN_PASSWORD` se ele ainda não existir.
+Depois do primeiro acesso, remova `ADMIN_PASSWORD` do `.env`. Para ver a loja com o catálogo
+de demonstração: `docker compose ... exec api node dist/database/seed.js --with-catalog`
+(remova depois com `--remove-placeholders`).
 
 Acesse `https://<DOMAIN>/admin`, entre com o admin e **ative o MFA** (obrigatório).
 Depois configure em _Configurações_: identidade/CNPJ/endereço, WhatsApp, frete
