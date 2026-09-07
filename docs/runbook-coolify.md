@@ -11,7 +11,7 @@ Para deploy manual com Docker Compose (sem Coolify), veja o [runbook-deploy.md](
 
 - Servidor com o Coolify instalado (2 vCPU, 4 GB de RAM e 40 GB de SSD bastam para começar).
   A loja pode rodar no mesmo servidor do Coolify.
-- DNS: registro A do domínio da loja (ex.: `loja.exemplo.com.br`) apontando para o IP do servidor.
+- DNS: registro A do domínio da loja (ex.: `loja.vellorwatches.com.br`) apontando para o IP do servidor.
 - Conta no Asaas (API key e token de webhook) e um provedor SMTP (Resend, SES, Brevo…).
 - Dois segredos gerados na sua máquina:
 
@@ -33,9 +33,9 @@ openssl rand -base64 48   # APP_ENCRYPTION_KEY (guarde em cofre; perder = perder
 
 ## 3. Domínio
 
-No serviço **web**, campo **Domains**, informe `https://loja.exemplo.com.br` e salve.
+No serviço **web**, campo **Domains**, informe `https://loja.vellorwatches.com.br` e salve.
 O proxy do Coolify emite o certificado sozinho no primeiro acesso. Se o proxy não detectar a
-porta do container, informe o domínio com a porta interna: `https://loja.exemplo.com.br:80`.
+porta do container, informe o domínio com a porta interna: `https://loja.vellorwatches.com.br:80`.
 
 Os serviços `postgres`, `api` e `backup` não recebem domínio: ficam acessíveis só pela rede
 interna. Toda a API é servida pelo `web` em `/api/*` e `/uploads/*`.
@@ -46,7 +46,7 @@ Aba **Environment Variables**. O Coolify já lista as variáveis usadas pelo com
 
 | Variável                                                         | Valor                                                      |
 | ---------------------------------------------------------------- | ---------------------------------------------------------- |
-| `APP_URL`                                                        | `https://loja.exemplo.com.br` (obrigatória)                |
+| `APP_URL`                                                        | `https://loja.vellorwatches.com.br` (obrigatória)          |
 | `POSTGRES_PASSWORD`                                              | o hexadecimal gerado acima (obrigatória)                   |
 | `APP_ENCRYPTION_KEY`                                             | a chave gerada acima (obrigatória, mínimo 32 caracteres)   |
 | `ADMIN_EMAIL`, `ADMIN_PASSWORD`, `ADMIN_NAME`                    | primeiro administrador; senha com 10+ caracteres           |
@@ -58,24 +58,29 @@ Aba **Environment Variables**. O Coolify já lista as variáveis usadas pelo com
 Para homologar sem conta no Asaas, defina `PAYMENTS_MOCK=true` (pedidos com pagamento
 simulado). Nunca deixe isso ligado em produção. Variáveis opcionais podem ficar vazias.
 
+Confira os valores antes de implantar: se algum campo vier preenchido com um texto de ajuda
+em vez de um valor real, substitua. `APP_URL` precisa ser exatamente `https://seu-dominio`,
+sem barra no final. Depois de alterar variáveis, use **Redeploy** (um simples Restart não
+recria os containers com os novos valores).
+
 ## 5. Deploy
 
 Clique em **Deploy** e acompanhe em **Logs**. O primeiro build leva alguns minutos (duas
 imagens). Na inicialização a API aplica as migrations, grava as configurações padrão e cria
 o administrador de `ADMIN_EMAIL` caso ele ainda não exista. Não há comando manual.
 
-Pronto quando `https://loja.exemplo.com.br` abre a loja e
-`https://loja.exemplo.com.br/api/v1/settings` responde JSON.
+Pronto quando `https://loja.vellorwatches.com.br` abre a loja e
+`https://loja.vellorwatches.com.br/api/v1/settings` responde JSON.
 
 ## 6. Primeiro acesso
 
-1. Abra `https://loja.exemplo.com.br/admin`, entre com `ADMIN_EMAIL` e `ADMIN_PASSWORD` e
+1. Abra `https://loja.vellorwatches.com.br/admin`, entre com `ADMIN_EMAIL` e `ADMIN_PASSWORD` e
    **ative o MFA** (obrigatório).
 2. Apague `ADMIN_PASSWORD` das variáveis do Coolify: a senha já está gravada no banco e a
    variável só serve para criar o primeiro administrador.
 3. Em **Configurações** preencha identidade, CNPJ, endereço, WhatsApp, frete (CEP de origem,
    seguro, tabela de contingência), parcelamento e os textos legais marcados com `‹decidir›`.
-4. No Asaas, em _Integrações > Webhooks_, cadastre `https://loja.exemplo.com.br/api/v1/webhooks/asaas`
+4. No Asaas, em _Integrações > Webhooks_, cadastre `https://loja.vellorwatches.com.br/api/v1/webhooks/asaas`
    com os eventos de cobrança (`PAYMENT_CREATED`, `PAYMENT_CONFIRMED`, `PAYMENT_RECEIVED`,
    `PAYMENT_OVERDUE`, `PAYMENT_REFUNDED`, `PAYMENT_DELETED`) e o mesmo token de `ASAAS_WEBHOOK_TOKEN`.
    Faça um pedido Pix de teste e confira que ele muda para "Pagamento confirmado".
@@ -112,7 +117,13 @@ do compose.
 ## 9. Problemas comuns
 
 - **Build falha por falta de memória**: use 4 GB ou ative swap no servidor.
-- **`defina POSTGRES_PASSWORD` ou `defina APP_URL` nos logs**: variável obrigatória vazia.
+- **`Configuração de ambiente inválida` nos logs do `api`** (o container fica em "Restart
+  limit reached"): a própria mensagem lista o que falta. `APP_URL: Invalid URL` é o valor
+  sem `https://` ou com texto extra; `ASAAS_API_KEY: Obrigatória em produção` pede as chaves
+  do Asaas ou `PAYMENTS_MOCK=true` para homologar. Corrija e clique em **Redeploy**.
+- **Senha do Postgres alterada depois do primeiro deploy**: o volume `pgdata` guarda a senha
+  usada na primeira subida. Sem dados ainda, pare o recurso, apague o volume no Terminal do
+  servidor (`docker volume ls | grep pgdata` e `docker volume rm <nome>`) e reimplante.
 - **A loja abre mas `/api` responde 502**: veja os logs do `api`; quase sempre é uma variável
   obrigatória faltando (`APP_ENCRYPTION_KEY`, `ASAAS_API_KEY` sem `PAYMENTS_MOCK`).
 - **Certificado não emitido**: o DNS ainda não propagou ou as portas 80/443 estão fechadas
