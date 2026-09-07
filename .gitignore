@@ -1,8 +1,30 @@
+# dependencies
 node_modules/
-build/
+
+# builds
 dist/
+build/
 coverage/
+*.tsbuildinfo
+
+# environment (segredos nunca vão para o repositório)
+.env
+.env.*
+!.env.example
+
+# dados locais
+apps/api/data/
+apps/api/uploads/
+infra/data/
+
+# testes e2e
+playwright-report/
+test-results/
+apps/web/.playwright/
+
+# sistema / editores
 .DS_Store
 *.log
-.env*
-!.env.example
+.idea/
+.vscode/*
+!.vscode/extensions.json
