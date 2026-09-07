@@ -152,6 +152,22 @@ export function passwordResetTemplate(ctx: TemplateContext, name: string, link: 
   };
 }
 
+export function teamInviteTemplate(
+  ctx: TemplateContext,
+  name: string,
+  link: string,
+  invitedBy: string,
+): Rendered {
+  const body = `<p>Olá, ${escapeHtml(name)}. ${escapeHtml(invitedBy)} convidou você para administrar a ${escapeHtml(ctx.storeName)}.</p>
+    <p><a href="${escapeHtml(link)}" style="display:inline-block;padding:12px 20px;background:#c8a25c;color:#0e1b1a;text-decoration:none;letter-spacing:0.1em">DEFINIR MINHA SENHA</a></p>
+    <p>O link vale por 7 dias. No primeiro acesso ao painel você também vai ativar a verificação em duas etapas com um aplicativo autenticador.</p>`;
+  return {
+    subject: `Convite para o painel · ${ctx.storeName}`,
+    html: layout(ctx.storeName, 'Você foi convidado para o painel', body, footer(ctx)),
+    text: `Olá, ${name}. ${invitedBy} convidou você para administrar a ${ctx.storeName}.\nDefina sua senha (válido por 7 dias): ${link}\nNo primeiro acesso ao painel você também ativará a verificação em duas etapas.`,
+  };
+}
+
 export function welcomeTemplate(ctx: TemplateContext, name: string): Rendered {
   const body = `<p>Olá, ${escapeHtml(name)}. Sua conta na ${escapeHtml(ctx.storeName)} foi criada.</p>
     <p>Aqui você acompanha pedidos, salva endereços e recebe em primeira mão as novidades em relógios e perfumes de nicho.</p>

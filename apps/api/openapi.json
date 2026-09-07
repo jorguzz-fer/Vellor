@@ -2622,6 +2622,142 @@
           "admin"
         ]
       }
+    },
+    "/api/v1/admin/team": {
+      "get": {
+        "operationId": "list",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TeamListDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookie": []
+          }
+        ],
+        "summary": "Lista os administradores do painel",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/api/v1/admin/team/invites": {
+      "post": {
+        "operationId": "invite",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TeamInviteDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TeamInviteResultDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookie": []
+          }
+        ],
+        "summary": "Convida um administrador (cria a conta ou promove um cliente) e devolve o link para definir a senha",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/api/v1/admin/team/{id}/reset-mfa": {
+      "post": {
+        "operationId": "resetMfa",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OkDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookie": []
+          }
+        ],
+        "summary": "Remove o segundo fator do administrador, que o configura de novo no próximo acesso",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/api/v1/admin/team/{id}": {
+      "delete": {
+        "operationId": "revoke",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OkDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookie": []
+          }
+        ],
+        "summary": "Remove o acesso administrativo (a conta volta a ser de cliente)",
+        "tags": [
+          "admin"
+        ]
+      }
     }
   },
   "info": {
@@ -9197,6 +9333,130 @@
           "pageSize",
           "total",
           "totalPages"
+        ]
+      },
+      "TeamListDto": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+            },
+            "name": {
+              "type": "string"
+            },
+            "email": {
+              "type": "string"
+            },
+            "mfaEnabled": {
+              "type": "boolean"
+            },
+            "invitePending": {
+              "type": "boolean"
+            },
+            "lastLoginAt": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "createdAt": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "name",
+            "email",
+            "mfaEnabled",
+            "invitePending",
+            "lastLoginAt",
+            "createdAt"
+          ]
+        }
+      },
+      "TeamInviteDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 120
+          },
+          "email": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "email"
+        ]
+      },
+      "TeamInviteResultDto": {
+        "type": "object",
+        "properties": {
+          "member": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid",
+                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+              },
+              "name": {
+                "type": "string"
+              },
+              "email": {
+                "type": "string"
+              },
+              "mfaEnabled": {
+                "type": "boolean"
+              },
+              "invitePending": {
+                "type": "boolean"
+              },
+              "lastLoginAt": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "createdAt": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "name",
+              "email",
+              "mfaEnabled",
+              "invitePending",
+              "lastLoginAt",
+              "createdAt"
+            ]
+          },
+          "setupUrl": {
+            "type": "string"
+          },
+          "expiresAt": {
+            "type": "string"
+          },
+          "emailQueued": {
+            "type": "boolean"
+          },
+          "promoted": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "member",
+          "setupUrl",
+          "expiresAt",
+          "emailQueued",
+          "promoted"
         ]
       }
     }

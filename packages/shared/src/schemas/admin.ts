@@ -213,3 +213,35 @@ export const AdminAuditQuerySchema = PaginationQuerySchema.extend({
   entity: z.string().max(40).optional(),
   actorId: z.uuid().optional(),
 });
+
+// ---------- Equipe (administradores do painel) ----------
+
+export const TeamMemberSchema = z.object({
+  id: z.uuid(),
+  name: z.string(),
+  email: z.string(),
+  mfaEnabled: z.boolean(),
+  /** Nunca entrou no painel: o convite ainda não foi concluído. */
+  invitePending: z.boolean(),
+  lastLoginAt: z.string().nullable(),
+  createdAt: z.string(),
+});
+export type TeamMember = z.infer<typeof TeamMemberSchema>;
+
+export const TeamInviteInputSchema = z.object({
+  name: z.string().trim().min(2, 'Informe o nome').max(120, 'Máximo de 120 caracteres'),
+  email: z.string().trim().toLowerCase().pipe(z.email('E-mail inválido')),
+});
+export type TeamInviteInput = z.infer<typeof TeamInviteInputSchema>;
+
+export const TeamInviteResultSchema = z.object({
+  member: TeamMemberSchema,
+  /** Link para a pessoa definir a própria senha; vale por 7 dias. */
+  setupUrl: z.string(),
+  expiresAt: z.string(),
+  /** true quando há SMTP configurado e o link também foi enviado por e-mail. */
+  emailQueued: z.boolean(),
+  /** true quando o e-mail já era de um cliente, que foi promovido a administrador. */
+  promoted: z.boolean(),
+});
+export type TeamInviteResult = z.infer<typeof TeamInviteResultSchema>;

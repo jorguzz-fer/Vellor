@@ -74,6 +74,10 @@ export const router = createBrowserRouter([
     lazy: lazyAdmin(() => import('./pages/admin/AdminMfaPage')),
   },
   {
+    path: '/admin/definir-senha',
+    lazy: lazyAdmin(() => import('./pages/admin/AdminSetPasswordPage')),
+  },
+  {
     path: '/admin',
     element: <AdminLayout />,
     children: [
@@ -91,6 +95,7 @@ export const router = createBrowserRouter([
       { path: 'atendimento/:id', lazy: lazyAdmin(() => import('./pages/admin/ContactDetailPage')) },
       { path: 'newsletter', lazy: lazyAdmin(() => import('./pages/admin/NewsletterPage')) },
       { path: 'configuracoes', lazy: lazyAdmin(() => import('./pages/admin/SettingsPage')) },
+      { path: 'equipe', lazy: lazyAdmin(() => import('./pages/admin/TeamPage')) },
       { path: 'auditoria', lazy: lazyAdmin(() => import('./pages/admin/AuditPage')) },
       { path: '*', element: <NotFoundPage /> },
     ],

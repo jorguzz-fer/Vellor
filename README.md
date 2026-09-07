@@ -93,7 +93,8 @@ formulário, newsletter com consentimento, páginas legais.
 (confirmar pagamento, separar, enviar com rastreio, entregar, cancelar, reembolsar,
 anotar), produtos com variações, estoque, ficha técnica por categoria e upload de
 imagens, categorias e coleções, cupons, clientes, atendimento, newsletter (CSV),
-configurações da loja (identidade, frete, parcelamento, textos legais) e auditoria.
+configurações da loja (identidade, frete, parcelamento, textos legais), equipe (convite de
+administradores por link, redefinição de MFA, remoção de acesso) e auditoria.
 
 ## Deploy
 
