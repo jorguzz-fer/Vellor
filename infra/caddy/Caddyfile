@@ -1,0 +1,48 @@
+# Caddy: único ponto de entrada público (TLS automático via Let's Encrypt).
+# DOMAIN=loja.exemplo.com.br em produção; DOMAIN=:80 para testar localmente sem TLS.
+{
+	email {$ACME_EMAIL}
+	admin off
+}
+
+{$DOMAIN} {
+	encode zstd gzip
+
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=()"
+		Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests"
+		-Server
+	}
+
+	# Rotas internas da API nunca ficam públicas
+	@internal path /metrics /health /ready /api/docs*
+	handle @internal {
+		respond 404
+	}
+
+	# API e uploads (mesma origem: cookies de sessão funcionam sem CORS)
+	@api path /api/* /uploads/*
+	handle @api {
+		reverse_proxy api:3001 {
+			header_up X-Request-Id {http.request.uuid}
+		}
+	}
+
+	# SPA: assets imutáveis com cache longo; demais rotas caem no index.html
+	handle {
+		root * /srv
+		@assets path /assets/*
+		header @assets Cache-Control "public, max-age=31536000, immutable"
+		try_files {path} /index.html
+		file_server
+	}
+
+	log {
+		output stdout
+		format json
+	}
+}

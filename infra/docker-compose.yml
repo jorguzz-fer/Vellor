@@ -1,0 +1,35 @@
+# Infra local de desenvolvimento: só o que a API precisa (banco e caixa de e-mail).
+# Uso: docker compose -f infra/docker-compose.yml up -d
+# A API e o web rodam no host com `pnpm dev` (hot reload).
+name: vellor-dev
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: vellor
+      POSTGRES_PASSWORD: vellor
+      POSTGRES_DB: vellor_dev
+    ports:
+      - '5432:5432'
+    volumes:
+      - pgdata_dev:/var/lib/postgresql/data
+      - ./postgres/init-test-db.sh:/docker-entrypoint-initdb.d/10-test-db.sh:ro
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U vellor -d vellor_dev']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # Caixa de e-mail de desenvolvimento: http://localhost:8025 (SMTP em localhost:1025)
+  mailpit:
+    image: axllent/mailpit:v1.24
+    ports:
+      - '8025:8025'
+      - '1025:1025'
+    environment:
+      MP_SMTP_AUTH_ACCEPT_ANY: '1'
+      MP_SMTP_AUTH_ALLOW_INSECURE: '1'
+
+volumes:
+  pgdata_dev:
