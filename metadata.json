@@ -1,0 +1,6 @@
+{
+  "name": "Vellor Wealth Watches",
+  "description": "High-luxury e-commerce layout for Vellor Wealth Watches featuring boxed catalog grids, quick-view horology specs, filtered collections, and editorial showcase.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
