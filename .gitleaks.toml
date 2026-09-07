@@ -1,0 +1,19 @@
+# Configuração do gitleaks (varredura de segredos na CI).
+# Mantém todas as regras padrão e libera apenas valores fictícios usados em testes.
+title = "Vellor"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Chaves e senhas fictícias dos testes automatizados (nunca usadas em produção)"
+paths = [
+  '''apps/web/playwright\.config\.ts''',
+  '''apps/web/e2e/.*''',
+  '''apps/api/test/.*''',
+  '''apps/api/src/.*\.spec\.ts''',
+]
+regexes = [
+  '''e2e-encryption-key-''',
+  '''JBSWY3DPEHPK3PXP''',
+]
