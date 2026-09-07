@@ -55,7 +55,7 @@ export function AdminLayout() {
         className={`fixed inset-y-0 left-0 z-40 flex w-64 flex-col border-r border-line bg-noir transition-transform lg:static lg:translate-x-0 ${open ? 'translate-x-0' : '-translate-x-full'}`}
       >
         <div className="flex items-center justify-between border-b border-line px-5 py-4">
-          <BrandLogo size="sm" showTagline={false} />
+          <BrandLogo size="sm" />
           <button
             type="button"
             className="p-1 text-ivory/60 lg:hidden"
