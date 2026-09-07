@@ -12,6 +12,7 @@ import {
   ShoppingCart,
   Tags,
   TicketPercent,
+  UserCog,
   Users,
   X,
 } from 'lucide-react';
@@ -32,6 +33,7 @@ const NAV = [
   { to: '/admin/atendimento', label: t('admin.contacts'), icon: MessageSquare },
   { to: '/admin/newsletter', label: t('admin.newsletter'), icon: Mail },
   { to: '/admin/configuracoes', label: t('admin.settings'), icon: Settings },
+  { to: '/admin/equipe', label: t('admin.team'), icon: UserCog },
   { to: '/admin/auditoria', label: t('admin.audit'), icon: FileClock },
   { to: '/admin/categorias', label: '', icon: Tags, hidden: true },
 ].filter((n) => !n.hidden);

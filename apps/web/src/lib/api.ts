@@ -49,6 +49,9 @@ import type {
   ShippingQuoteInput,
   StockAdjustInput,
   StoreSettings,
+  TeamInviteInput,
+  TeamInviteResult,
+  TeamMember,
   UpdateProfileInput,
 } from '@vellor/shared';
 
@@ -310,4 +313,12 @@ export const adminApi = {
 
   audit: (query: { page?: number; pageSize?: number; entity?: string }) =>
     request<Paginated<AuditLog>>('/admin/audit-logs', { query }),
+
+  team: () => request<TeamMember[]>('/admin/team'),
+  inviteTeamMember: (input: TeamInviteInput) =>
+    request<TeamInviteResult>('/admin/team/invites', { method: 'POST', body: input }),
+  resetTeamMfa: (id: string) =>
+    request<{ ok: true }>(`/admin/team/${id}/reset-mfa`, { method: 'POST' }),
+  revokeTeamMember: (id: string) =>
+    request<{ ok: true }>(`/admin/team/${id}`, { method: 'DELETE' }),
 };

@@ -102,9 +102,9 @@ RPO alvo: 24 h (reduza `BACKUP_INTERVAL_SECONDS` se necessário). RTO alvo: < 1 
 - Outbox: e-mails que falharam ficam em `outbox_events` com `status = 'dead'`; corrija a
   causa (SMTP) e reenfileire com `update outbox_events set status='pending', attempts=0 where status='dead'`.
 - Pedidos pendentes expiram automaticamente após 5 dias (job horário) liberando o estoque.
-- Admin perdeu o MFA: outro admin não pode redefinir pela UI na v1. Com acesso ao banco:
-  `update users set mfa_secret_encrypted=null, mfa_enabled_at=null where email='<email>'` e
-  peça para reconfigurar no próximo login (registre a ação).
+- Novo administrador, MFA perdido ou desligamento: em **Admin → Equipe** outro administrador
+  convida por link (a pessoa define a própria senha e ativa o MFA no primeiro acesso), redefine
+  o segundo fator ou remove o acesso. Tudo fica registrado na auditoria; nada de SQL manual.
 
 ## 8. Checklist de go-live
 

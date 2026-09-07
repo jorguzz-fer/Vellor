@@ -325,6 +325,7 @@ export const ptBR = {
     newsletter: 'Newsletter',
     settings: 'Configurações',
     audit: 'Auditoria',
+    team: 'Equipe',
     viewStore: 'Ver loja',
     logout: 'Sair',
     login: 'Acesso restrito',

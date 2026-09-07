@@ -34,6 +34,11 @@ export class MailService {
       : null;
   }
 
+  /** true quando há SMTP configurado; sem ele os e-mails só vão para o log. */
+  get configured(): boolean {
+    return this.transporter !== null;
+  }
+
   /** Dados da loja usados pelos templates (nome, canais de atendimento, URL). */
   async context(): Promise<TemplateContext> {
     const store = (await this.settings.get()).store;
