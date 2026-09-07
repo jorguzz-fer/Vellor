@@ -121,9 +121,13 @@ do compose.
   limit reached"): a própria mensagem lista o que falta. `APP_URL: Invalid URL` é o valor
   sem `https://` ou com texto extra; `ASAAS_API_KEY: Obrigatória em produção` pede as chaves
   do Asaas ou `PAYMENTS_MOCK=true` para homologar. Corrija e clique em **Redeploy**.
-- **Senha do Postgres alterada depois do primeiro deploy**: o volume `pgdata` guarda a senha
-  usada na primeira subida. Sem dados ainda, pare o recurso, apague o volume no Terminal do
-  servidor (`docker volume ls | grep pgdata` e `docker volume rm <nome>`) e reimplante.
+- **`password authentication failed for user "vellor"` nos logs do `api`**: a senha em
+  `POSTGRES_PASSWORD` mudou depois que o banco já existia (o volume `pgdata` guarda a senha da
+  primeira subida). Alinhe o banco à variável: no **Terminal** do Coolify, escolha o container
+  `postgres` e rode `psql -U vellor -d vellor -c "ALTER USER vellor WITH PASSWORD '<valor de POSTGRES_PASSWORD>';"`.
+  O `api` reconecta sozinho na próxima reinicialização. Alternativa, se ainda não houver dados:
+  pare o recurso, apague o volume (`docker volume ls | grep pgdata` e `docker volume rm <nome>`)
+  e reimplante.
 - **A loja abre mas `/api` responde 502**: veja os logs do `api`; quase sempre é uma variável
   obrigatória faltando (`APP_ENCRYPTION_KEY`, `ASAAS_API_KEY` sem `PAYMENTS_MOCK`).
 - **Certificado não emitido**: o DNS ainda não propagou ou as portas 80/443 estão fechadas
